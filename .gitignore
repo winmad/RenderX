@@ -2,7 +2,7 @@ data/
 build/
 *.bmp
 *.pfm
-*.txt
+*.log
 
 #################
 ## Eclipse

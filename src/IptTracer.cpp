@@ -399,6 +399,7 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 				/*
 				fprintf(fp , "==================\n");
 				for (int i = 0; i < eyePath.size(); i++)
+
 				{
 					fprintf(fp , "c = (%.8f,%.8f,%.8f), dir = (%.8f,%.8f,%.8f), cos = %.8f, dirPdf = %.8f, oriPdf = %.8f\n" ,
 						eyePath[i].color.x , eyePath[i].color.y , eyePath[i].color.z ,
