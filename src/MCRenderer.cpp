@@ -28,9 +28,10 @@ void MCRenderer::setSavePath(const string& savePath)
 	unsigned pos2 = savePath.rfind('\\');
 	unsigned pos = pos1 < pos2 ? pos1 : pos2;
 	string folderPath = savePath.substr(0, pos);
-	if(_access(folderPath.c_str(), 0))
+	if(access(folderPath.c_str(), 0) != -1)
 	{
-		this->savePath = renderer->configManager->getRootPath() + string("/") + savePath;
+		//this->savePath = renderer->configManager->getRootPath() + string("/") + savePath;
+        this->savePath = savePath;
 	}
 }
 
@@ -407,6 +408,7 @@ void MCRenderer::showCurrentResult(const vector<vec3f>& pixelColors , unsigned* 
 	}
 
 	cvSetMouseCallback("Renderer", mouseEvent, this);
+    printf("savePath = %s\n" , savePath.c_str());
 	if(savePath != "")
 	{
 		saveImagePFM(savePath, image);
@@ -417,8 +419,10 @@ void MCRenderer::showCurrentResult(const vector<vec3f>& pixelColors , unsigned* 
 		char timeStr[100] , iterStr[100];
 		memset(timeStr , 0 , sizeof(timeStr));
 		memset(iterStr , 0 , sizeof(iterStr));
-		itoa(*time , timeStr , 10);
-		itoa(*iter , iterStr , 10);
+        sprintf(timeStr , "%d" , *time);
+        sprintf(iterStr , "%d" , *iter);
+		//itoa(*time , timeStr , 10);
+		//itoa(*iter , iterStr , 10);
 		string fileName("");
 		for (int i = 0; i < savePath.length(); i++)
 		{
@@ -500,7 +504,7 @@ string MCRenderer::response(const IplImage* currentImage)
 void MCRenderer::saveImagePFM(const string& fileName, const IplImage* image)
 {
 	FILE* file;
-	fopen_s(&file, fileName.c_str(), "wb");
+	file = fopen(fileName.c_str(), "wb");
 
 	fprintf(file, "PF\n%d %d\n-1.000000\n", image->width, image->height);
 
@@ -517,9 +521,9 @@ void MCRenderer::saveImagePFM(const string& fileName, const IplImage* image)
 	fclose(file);
 }
 
-vector<vector<unsigned>> MCRenderer::testPathListVisibility(const vector<Path>& startPathList, const vector<Path>& endPathList)
+vector<vector<unsigned> > MCRenderer::testPathListVisibility(const vector<Path>& startPathList, const vector<Path>& endPathList)
 {
-	vector<vector<unsigned>> visibilityList(startPathList.size());
+	vector<vector<unsigned> > visibilityList(startPathList.size());
 	vector<Ray> rays;
 
 	unsigned lastPathIndex = 0;

@@ -91,10 +91,11 @@ vector<vec3f> PhotonMap::renderPixels(const Camera& camera){
 #pragma omp parallel for
 		for(int p = 0; p < pixelColors.size(); p++){
 			Path eyePath;
+            Ray cameraRay = camera.generateRay(p);
 			if (rayMarching)
-				sampleMergePath(eyePath, camera.generateRay(p), 0);
+				sampleMergePath(eyePath, cameraRay, 0);
 			else
-				samplePath(eyePath, camera.generateRay(p));
+				samplePath(eyePath, cameraRay);
 
 			//fprintf(fp , "===================\n");
 			//for (int i = 0; i < eyePath.size(); i++)

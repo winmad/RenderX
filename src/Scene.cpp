@@ -275,7 +275,7 @@ void Scene::buildKDTree()
 	tree.build();
 	if(useGPU)
 	{
-		glutExit();
+		//glutExit();
 
 		IntersectionGPU::init();
 		

@@ -4,7 +4,7 @@
 #include <algorithm>
 #include "nvVector.h"
 
-using namespace std;
+//using namespace std;
 using namespace nv;
 
 class KDTree
@@ -42,10 +42,10 @@ private:
 	void destroy(Node* node);
 	float intersect(const Ray& ray, const Node* node, unsigned& triangleID, const Condition* condition) const;
 	float intersect(const Ray& ray, const Triangle& tri, const Condition* condition) const;
-	void serializeForGPU(Node* node, int parent, vector<vec4f>& nodes, vector<vec4f>& nodes_minCoords, vector<vec4f>& nodes_maxCoords, vector<vec4f>& leaf_v1, vector<vec4f>& leaf_v2, vector<vec4f>& leaf_v3) const;
+	void serializeForGPU(Node* node, int parent, std::vector<vec4f>& nodes, std::vector<vec4f>& nodes_minCoords, std::vector<vec4f>& nodes_maxCoords, std::vector<vec4f>& leaf_v1, std::vector<vec4f>& leaf_v2, std::vector<vec4f>& leaf_v3) const;
 public:
-	vector<vec3f> vertexPositionList;
-	vector<Triangle> triangleList;
+    std::vector<vec3f> vertexPositionList;
+    std::vector<Triangle> triangleList;
 
 	float intersect(const Ray& ray, unsigned& triangleID, const Condition* condition = NULL) const;
 
@@ -53,7 +53,7 @@ public:
 	vec3f getDiagonal();
 	void build(Strategy strategy = BEST);
 	void destroy();
-	void serializeForGPU(vector<vec4f>& nodes, vector<vec4f>& nodes_minCoords, vector<vec4f>& nodes_maxCoords, vector<vec4f>& leaf_v1, vector<vec4f>& leaf_v2, vector<vec4f>& leaf_v3) const;
+	void serializeForGPU(std::vector<vec4f>& nodes, std::vector<vec4f>& nodes_minCoords, std::vector<vec4f>& nodes_maxCoords, std::vector<vec4f>& leaf_v1, std::vector<vec4f>& leaf_v2, std::vector<vec4f>& leaf_v3) const;
 	~KDTree();
 
 };
@@ -62,7 +62,7 @@ struct KDTree::Node
 {
 	Node* left;
 	Node* right;
-	vector<unsigned> triangleIndices;
+    std::vector<unsigned> triangleIndices;
 	struct BoundingBox
 	{
 		vec3f minCoord;

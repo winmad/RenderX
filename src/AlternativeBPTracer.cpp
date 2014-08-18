@@ -1,7 +1,6 @@
 #include "StdAfx.h"
 #include "AlternativeBPTracer.h"
 
-
 vector<vec3f> AlternativeBPTracer::renderPixels(const Camera& camera)
 {
 	vector<vec3f> pixelColors(camera.width * camera.height, vec3f(0, 0, 0));
@@ -25,14 +24,14 @@ vector<vec3f> AlternativeBPTracer::renderPixels(const Camera& camera)
 
 		unsigned t = clock();
 
-		vector<unordered_map<unsigned, unsigned>> nLightRaysCaught(pixelColors.size());
+		vector<unordered_map<unsigned, unsigned> > nLightRaysCaught(pixelColors.size());
 
 		vector<Path*> lightPathList(pixelColors.size(), NULL);
 
 #pragma omp parallel for
 		for(int p=0; p<pixelColors.size(); p++)
 		{
-			Ray lightRay = genEmissiveSurfaceSample();
+			Ray lightRay = genEmissiveSurfaceSample(true , true);
 			Path *lightPath = new Path;
 			samplePath(*lightPath, lightRay);
 			statLightRaysCaught(nLightRaysCaught, pixelLocks, *lightPath);
@@ -45,8 +44,8 @@ vector<vec3f> AlternativeBPTracer::renderPixels(const Camera& camera)
 			Path eyePath;
 
 			const Path &lightPath = *lightPathList[p];
-
-			samplePath(eyePath, camera.generateRay(p));
+            Ray ray = camera.generateRay(p);
+			samplePath(eyePath, ray);
 
 			if(p == pathPixelID)
 				showPath = lightPath;
@@ -85,7 +84,7 @@ vector<vec3f> AlternativeBPTracer::renderPixels(const Camera& camera)
 	return pixelColors;
 }
 
-void AlternativeBPTracer::statLightRaysCaught(vector<unordered_map<unsigned, unsigned>>& nLightRaysCaught, vector<omp_lock_t> &pixelLocks, const Path& lightPath)
+void AlternativeBPTracer::statLightRaysCaught(vector<unordered_map<unsigned, unsigned> >& nLightRaysCaught, vector<omp_lock_t> &pixelLocks, const Path& lightPath)
 {
 	const Camera& camera = renderer->camera;
 	for(unsigned i=0; i<lightPath.size(); i++)
@@ -138,7 +137,8 @@ bool AlternativeBPTracer::connectRays(Path& path, int connectIndex, int pixelID)
 
 	if(connectIndex == path.size() - 2)
 	{
-		float connectDist = max2((lightRay.origin-eyeRay.origin).length(), EPSILON);
+        vec3f connectVec = (lightRay.origin - eyeRay.origin);
+		float connectDist = max2(connectVec.length(), EPSILON);
 		float ds = connectDist*connectDist*renderer->camera.get_dw(pixelID) / lightRay.getCosineTerm();
 		eyeRay.originProb = 1/ds;
 	}
@@ -248,7 +248,7 @@ float AlternativeBPTracer::connectWeight(int pixelID, int lightRaysCaught, const
 	return powf(selfProb, expTerm) / sumExpProb;
 }
 
-void AlternativeBPTracer::colorByConnectingPaths(vector<unordered_map<unsigned, unsigned>>& nLightRaysCaught, vector<omp_lock_t> &pixelLocks, const Camera& camera, vector<vec3f>& colors, const Path& eyePath, const Path& lightPath)
+void AlternativeBPTracer::colorByConnectingPaths(vector<unordered_map<unsigned, unsigned> >& nLightRaysCaught, vector<omp_lock_t> &pixelLocks, const Camera& camera, vector<vec3f>& colors, const Path& eyePath, const Path& lightPath)
 {
 	unsigned maxEyePathLen = eyePath.size();
 	unsigned maxLightPathLen = lightPath.size();

@@ -40,7 +40,7 @@ public:
 	void setUniform(const string& varName, const matrix4<float>& v) { setUniform(currentProgName, varName, v); }
 	void setTexArray1D(const string& varName, const vector<vec4f>& tex);
 	void setTexArray2D(const string& varName, const vector<vec4f>& tex, int width = 1);
-	void setTexArray2D(const string& varName, const vector<vector<vec4f>>& tex);
+	void setTexArray2D(const string& varName, const vector<vector<vec4f> >& tex);
 	void deleteLastTexture()
 	{
 		if(texIDs.size())

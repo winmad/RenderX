@@ -1,9 +1,14 @@
 #pragma once
 
+#ifdef __APPLE__
+    #include <sys/uio.h>
+#else
+    #include <io.h>
+#endif
+
 #include "Renderer.h"
 #include "macros.h"
-#include <io.h>
-#include <math.h>
+#include <cmath>
 
 typedef vector<Ray> Path;
 
@@ -80,7 +85,7 @@ protected:
 
 	bool testVisibility(const Ray& startRay, const Ray& endRay);
 
-	vector<vector<unsigned>> testPathListVisibility(const vector<Path>& startPathList, const vector<Path>& endPathList);
+	vector<vector<unsigned> > testPathListVisibility(const vector<Path>& startPathList, const vector<Path>& endPathList);
 
 	void saveImagePFM(const string& fileName, const IplImage* image);
 

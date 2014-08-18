@@ -11,7 +11,7 @@ private:
 public:
 	DiffuseMaterial* getMaterial(){ return material; }
 
-	SceneDiffuseObject(Scene* scene) : SceneObject(scene)
+    SceneDiffuseObject(Scene* scene) : SceneObject(scene)
 	{
 		canMerge = true;
 		material = new DiffuseMaterial();

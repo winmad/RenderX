@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "Renderer.h"
+#include "MCRenderer.h"
 
 Renderer::Renderer()
 {
@@ -52,7 +53,7 @@ void Renderer::render()
 void Renderer::waitForCommand()
 {
 	int key = cvWaitKey(10);
-	loadConfig("Data/Config.xml");
+	loadConfig("Config.xml");
 	//while (key != 'q')
 	//{
 	//	preview();

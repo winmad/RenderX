@@ -1,9 +1,8 @@
 #pragma once
 #include "nvVector.h"
+#include <cmath>
 
 using namespace nv;
-
-
 
 struct LocalFrame
 {

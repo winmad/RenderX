@@ -59,7 +59,7 @@ void KDTree::splitLoop(Node* node, unsigned dim, unsigned depth)
 	node->boundingBox.minCoord = node->boundingBox.maxCoord = 
 		vertexPositionList[triangleList[node->triangleIndices[0]].vertexIndices[0]];
 
-	unordered_set<unsigned> nodeVertexIndices;
+    std::unordered_set<unsigned> nodeVertexIndices;
 
 	for(unsigned i=0; i<node->triangleIndices.size(); i++)
 	{
@@ -78,8 +78,8 @@ void KDTree::splitLoop(Node* node, unsigned dim, unsigned depth)
 	if(node->triangleIndices.size() <= maxLeafTriangleNum)
 		return;
 
-	vector<float> coordList;
-	for(unordered_set<unsigned>::iterator it=nodeVertexIndices.begin(); it!=nodeVertexIndices.end(); it++)
+    std::vector<float> coordList;
+	for(std::unordered_set<unsigned>::iterator it=nodeVertexIndices.begin(); it!=nodeVertexIndices.end(); it++)
 	{
 		coordList.push_back(vertexPositionList[*it][dim]);
 	}
@@ -139,7 +139,7 @@ void KDTree::splitBest(Node* node, unsigned depth)
 		node->boundingBox.minCoord = node->boundingBox.maxCoord = 
 			vertexPositionList[triangleList[node->triangleIndices[0]].vertexIndices[0]];
 
-		unordered_set<unsigned> nodeVertexIndices;
+        std::unordered_set<unsigned> nodeVertexIndices;
 
 		for(unsigned i=0; i<node->triangleIndices.size(); i++)
 		{
@@ -158,8 +158,8 @@ void KDTree::splitBest(Node* node, unsigned depth)
 		if(node->triangleIndices.size() <= maxLeafTriangleNum)
 			return;
 
-		vector<float> coordList;
-		for(unordered_set<unsigned>::iterator it=nodeVertexIndices.begin(); it!=nodeVertexIndices.end(); it++)
+        std::vector<float> coordList;
+		for(std::unordered_set<unsigned>::iterator it=nodeVertexIndices.begin(); it!=nodeVertexIndices.end(); it++)
 		{
 			coordList.push_back(vertexPositionList[*it][dim]);
 		}
@@ -343,7 +343,7 @@ KDTree::~KDTree()
 	destroy();
 }
 
-void KDTree::serializeForGPU(Node* node, int parent, vector<vec4f>& nodes, vector<vec4f>& nodes_minCoords, vector<vec4f>& nodes_maxCoords, vector<vec4f>& leaf_v1, vector<vec4f>& leaf_v2, vector<vec4f>& leaf_v3) const
+void KDTree::serializeForGPU(Node* node, int parent, std::vector<vec4f>& nodes, std::vector<vec4f>& nodes_minCoords, std::vector<vec4f>& nodes_maxCoords, std::vector<vec4f>& leaf_v1, std::vector<vec4f>& leaf_v2, std::vector<vec4f>& leaf_v3) const
 {
 	nodes_minCoords.push_back(vec4f(node->boundingBox.minCoord.x, node->boundingBox.minCoord.y, node->boundingBox.minCoord.z, 0));
 	nodes_maxCoords.push_back(vec4f(node->boundingBox.maxCoord.x, node->boundingBox.maxCoord.y, node->boundingBox.maxCoord.z, 0));
@@ -376,7 +376,7 @@ void KDTree::serializeForGPU(Node* node, int parent, vector<vec4f>& nodes, vecto
 	
 }
 
-void KDTree::serializeForGPU(vector<vec4f>& nodes, vector<vec4f>& nodes_minCoords, vector<vec4f>& nodes_maxCoords, vector<vec4f>& leaf_v1, vector<vec4f>& leaf_v2, vector<vec4f>& leaf_v3) const
+void KDTree::serializeForGPU(std::vector<vec4f>& nodes, std::vector<vec4f>& nodes_minCoords, std::vector<vec4f>& nodes_maxCoords, std::vector<vec4f>& leaf_v1, std::vector<vec4f>& leaf_v2, std::vector<vec4f>& leaf_v3) const
 {
 	// nodes (parentIndex, rightChildIndex, leafStartIndex, leafEndIndex)
 	serializeForGPU(root, -1, nodes, nodes_minCoords, nodes_maxCoords, leaf_v1, leaf_v2, leaf_v3);

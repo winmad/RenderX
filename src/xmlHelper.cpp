@@ -5,7 +5,7 @@ matrix4<float> readMatrix(const char* value)
 {
 	float v[16];
 
-	sscanf_s(value, "[%f, %f, %f, %f][%f, %f, %f, %f][%f, %f, %f, %f][%f, %f, %f, %f]",
+	sscanf(value, "[%f, %f, %f, %f][%f, %f, %f, %f][%f, %f, %f, %f][%f, %f, %f, %f]",
 		v, v+1, v+2, v+3,
 		v+4,v+5, v+6, v+7,
 		v+8, v+9, v+10, v+11,
@@ -18,6 +18,6 @@ matrix4<float> readMatrix(const char* value)
 vec3f readVec(const char* value)
 {
 	vec3f vec;
-	sscanf_s(value, "(%f, %f, %f)", &vec.x, &vec.y, &vec.z);
+	sscanf(value, "(%f, %f, %f)", &vec.x, &vec.y, &vec.z);
 	return vec;
 }

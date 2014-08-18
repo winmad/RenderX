@@ -228,8 +228,8 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 			{
 				//fprintf(fp2 , "========== pixel id = %d ==========\n" , p);
 				Path eyePath;
-				
-				sampleMergePath(eyePath , camera.generateRay(p) , 0);
+				Ray cameraRay = camera.generateRay(p);
+				sampleMergePath(eyePath , cameraRay , 0);
 				singleImageColors[p] += colorByRayMarching(eyePath , partialSubPaths , p);
 				
 				// abandon all the rest!
@@ -623,7 +623,7 @@ void IptTracer::genLightPaths(omp_lock_t& cmdLock , vector<Path*>& lightPathList
 				weightFactor = connectFactor(pdf) /
 					(connectFactor(pdf) + mergeFactor(&volMergeScale , &originProb , &dirProb , &lightPathNum));
 
-				if (_isnan(weightFactor) || abs(pdf) < 1e-6f)
+				if (isnan(weightFactor) || abs(pdf) < 1e-6f)
 				{
 					fprintf(err , "sample light path error, %.8f , %.8f\n" , connectFactor(pdf) , 
 						mergeFactor(&volMergeScale , &originProb , &dirProb , &lightPathNum));
@@ -797,7 +797,7 @@ void IptTracer::genIntermediatePaths(omp_lock_t& cmdLock , vector<Path*>& interP
 				weightFactor = connectFactor(pdf) /
 					(connectFactor(pdf) + mergeFactor(&volMergeScale , &originProb , &dirProb , &partialPathNum));
 
-				if (_isnan(weightFactor) || abs(pdf) < 1e-6f)
+				if (isnan(weightFactor) || abs(pdf) < 1e-6f)
 				{
 					fprintf(err , "sample inter path error, %.8f , %.8f\n" , connectFactor(pdf) , 
 						mergeFactor(&volMergeScale , &originProb , &dirProb , &partialPathNum));

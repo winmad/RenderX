@@ -73,7 +73,7 @@ public:
 		//useGPU = true;
 		useGPU = false;
 	}
-	int Scene::getContactTreeTid(const Ray& ray);
+	int getContactTreeTid(const Ray& ray);
 	void setGPU(bool on){ useGPU = on; }
 	bool usingGPU(){ return useGPU; }
 	vector<SceneObject*> objects;

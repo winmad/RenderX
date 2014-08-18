@@ -1,7 +1,14 @@
 #pragma once
-#include <io.h>
+
+#ifdef __APPLE__
+    #include <sys/uio.h>
+#else
+    #include <io.h>
+#endif
+
 #include "textfile.h"
-#include <rapidxml.hpp>
+#include <rapidxml/rapidxml.hpp>
+#include <unistd.h>
 #include <string>
 #include <unordered_map>
 #include "xmlHelper.h"
@@ -29,7 +36,7 @@ private:
 
 	string currentPath;
 
-	unordered_map<string, pair<xml_document<>*, char*>> path_doc;
+	unordered_map<string, pair<xml_document<>*, char*> > path_doc;
 
 	Renderer* renderer;
 
@@ -41,7 +48,7 @@ private:
 
 	void clear()
 	{
-		for(unordered_map<string, pair<xml_document<>*, char*>>::iterator it=path_doc.begin(); it!=path_doc.end(); it++)
+		for(unordered_map<string, pair<xml_document<>*, char*> >::iterator it=path_doc.begin(); it!=path_doc.end(); it++)
 		{
 			delete (it->second).first;
 			free(it->second.second);

@@ -52,7 +52,7 @@ void SimpleShape::loadShape(const string &fileName, bool normalize, vector<Simpl
 	if(suffix == ".shp")
 	{
 		FILE* file;
-		fopen_s(&file, fileName.c_str(),"rb");
+		file = fopen(fileName.c_str(),"rb");
 		int size;
 		fread(&size,sizeof(int),1,file);
 		vertexList.resize(size);
@@ -68,7 +68,7 @@ void SimpleShape::loadShape(const string &fileName, bool normalize, vector<Simpl
 		char attrib[BUFFERSIZE];
 		char parms[3][BUFFERSIZE];
 		FILE* file;
-		fopen_s(&file, fileName.c_str(),"r");
+		file = fopen(fileName.c_str(),"r");
 
 		unsigned current_fi = vertexList.size();
 		unsigned current_fni = vertexNormalList.size();
@@ -80,7 +80,7 @@ void SimpleShape::loadShape(const string &fileName, bool normalize, vector<Simpl
 		{
 			if(line[0] == '#')
 				continue;
-			int num = sscanf_s(line,"%s %s %s %s",attrib,BUFFERSIZE,parms[0],BUFFERSIZE,parms[1],BUFFERSIZE,parms[2],BUFFERSIZE);
+			int num = sscanf(line,"%s %s %s %s",attrib,parms[0],parms[1],parms[2]);
 
 			if(strcmp("g",attrib)==0 && split)
 			{
@@ -100,9 +100,9 @@ void SimpleShape::loadShape(const string &fileName, bool normalize, vector<Simpl
 			if(strcmp("v",attrib)==0)
 			{
 				vec3f vert;
-				sscanf_s(parms[0],"%f",&vert.x,sizeof(float));
-				sscanf_s(parms[1],"%f",&vert.y,sizeof(float));
-				sscanf_s(parms[2],"%f",&vert.z,sizeof(float));
+				sscanf(parms[0],"%f",&vert.x);
+				sscanf(parms[1],"%f",&vert.y);
+				sscanf(parms[2],"%f",&vert.z);
 				vertexList.push_back(vert);
 				if(split && shape)
 					shape->vertexList.push_back(vert);
@@ -113,22 +113,22 @@ void SimpleShape::loadShape(const string &fileName, bool normalize, vector<Simpl
 				bool has_n = false;
 				bool has_t = false;
 
-				ret = sscanf_s(parms[0],"%d/%d/%d",&tri.x,&tTri.x,&vnTri.x,sizeof(unsigned));
-				ret = sscanf_s(parms[1],"%d/%d/%d",&tri.y,&tTri.y,&vnTri.y,sizeof(unsigned));
-				ret = sscanf_s(parms[2],"%d/%d/%d",&tri.z,&tTri.z,&vnTri.z,sizeof(unsigned));
+				ret = sscanf(parms[0],"%d/%d/%d",&tri.x,&tTri.x,&vnTri.x);
+				ret = sscanf(parms[1],"%d/%d/%d",&tri.y,&tTri.y,&vnTri.y);
+				ret = sscanf(parms[2],"%d/%d/%d",&tri.z,&tTri.z,&vnTri.z);
 
 				if(ret==1)
 				{
-					ret = sscanf_s(parms[0],"%d//%d",&tri.x,&vnTri.x,sizeof(unsigned));
-					ret = sscanf_s(parms[1],"%d//%d",&tri.y,&vnTri.y,sizeof(unsigned));
-					ret = sscanf_s(parms[2],"%d//%d",&tri.z,&vnTri.z,sizeof(unsigned));
+					ret = sscanf(parms[0],"%d//%d",&tri.x,&vnTri.x);
+					ret = sscanf(parms[1],"%d//%d",&tri.y,&vnTri.y);
+					ret = sscanf(parms[2],"%d//%d",&tri.z,&vnTri.z);
 					has_n = ret == 2;
 
 					if (ret == 1)
 					{
-						ret = sscanf_s(parms[0],"%d",&tri.x,sizeof(unsigned));
-						ret = sscanf_s(parms[1],"%d",&tri.y,sizeof(unsigned));
-						ret = sscanf_s(parms[2],"%d",&tri.z,sizeof(unsigned));
+						ret = sscanf(parms[0],"%d",&tri.x);
+						ret = sscanf(parms[1],"%d",&tri.y);
+						ret = sscanf(parms[2],"%d",&tri.z);
 						has_n = false;
 					}		
 				}
@@ -160,9 +160,9 @@ void SimpleShape::loadShape(const string &fileName, bool normalize, vector<Simpl
 			if(strcmp("vn",attrib)==0)
 			{
 				vec3f vn;
-				sscanf_s(parms[0],"%f",&vn.x,sizeof(float));
-				sscanf_s(parms[1],"%f",&vn.y,sizeof(float));
-				sscanf_s(parms[2],"%f",&vn.z,sizeof(float));
+				sscanf(parms[0],"%f",&vn.x);
+				sscanf(parms[1],"%f",&vn.y);
+				sscanf(parms[2],"%f",&vn.z);
 				vertexNormalList.push_back(vn);
 				if(split && shape)
 					shape->vertexNormalList.push_back(vn);
@@ -170,9 +170,9 @@ void SimpleShape::loadShape(const string &fileName, bool normalize, vector<Simpl
 			if(strcmp("vt",attrib)==0)
 			{
 				vec3f vt;
-				sscanf_s(parms[0],"%f",&vt.x,sizeof(float));
-				sscanf_s(parms[1],"%f",&vt.y,sizeof(float));
-				sscanf_s(parms[2],"%f",&vt.z,sizeof(float));
+				sscanf(parms[0],"%f",&vt.x);
+				sscanf(parms[1],"%f",&vt.y);
+				sscanf(parms[2],"%f",&vt.z);
 				vertexTexCoordList.push_back(vt);
 				if(split && shape)
 					shape->vertexTexCoordList.push_back(vt);
@@ -341,7 +341,7 @@ vec3f SimpleShape::getWorldNormal(unsigned fi, const vec3f& position, bool flat)
 void SimpleShape::saveShape(const string &fileName)
 {
 	FILE* file;
-	fopen_s(&file, fileName.c_str(),"wb");
+	file = fopen(fileName.c_str(),"wb");
 	int size;
 
 	size = vertexList.size()*3;

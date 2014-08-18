@@ -1,10 +1,15 @@
+#ifdef __APPLE__
+    #include <sys/uio.h>
+#else
+    #include <io.h>
+#endif
+
 #include "stdafx.h"
 #include "nvVector.h"
 #include "smallFuncs.h"
 #include <string>
 #include <iostream>
 #include <fstream>
-#include <io.h>
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 using namespace std;
@@ -45,16 +50,16 @@ void Compare(IplImage *img1, IplImage *img2, IplImage *ref){
 			vec3f bgr_img2 = ((vec3f*)img2->imageData)[y*width + x];
 			
 			var1[y*width+x] = pow((bgr_ref - bgr_img1).length(),2); 
-			var2[y*width+x] = pow((bgr_ref - bgr_img2).length(),2); 
-
-			if (_isnan(var1[y*width+x]))
+			var2[y*width+x] = pow((bgr_ref - bgr_img2).length(),2);
+            
+			if (isnan(var1[y*width+x]))
 				printf("(%d,%d): (%.6f,%.6f,%.6f), (%.6f,%.6f,%.6f)\n" , y , x , bgr_ref[0] , bgr_ref[1] , bgr_ref[2] ,
 					bgr_img1[0] , bgr_img1[1] , bgr_img1[2]);
-			if (_isnan(var2[y*width+x]))
+			if (isnan(var2[y*width+x]))
 				printf("(%d,%d): (%.6f,%.6f,%.6f), (%.6f,%.6f,%.6f)\n" , y , x , bgr_ref[0] , bgr_ref[1] , bgr_ref[2] ,
 					bgr_img2[0] , bgr_img2[1] , bgr_img2[2]);
-				
-			int index = width * y + x;
+            
+            int index = width * y + x;
 			
 			TotalVar1 += pow((bgr_img1-bgr_ref).length(),2);
 			TotalVar2 += pow((bgr_img2-bgr_ref).length(),2);
@@ -101,8 +106,8 @@ double CalculateRMSE(IplImage *img1, IplImage *ref){
 			vec3f bgr_img1 = ((vec3f*)img1->imageData)[y*width + x];
 
 			var1[y*width+x] = pow((bgr_ref - bgr_img1).length(),2); 
-
-			if (_isnan(var1[y*width+x]))
+            
+			if (isnan(var1[y*width+x]))
 				printf("(%d,%d): (%.6f,%.6f,%.6f), (%.6f,%.6f,%.6f)\n" , y , x , bgr_ref[0] , bgr_ref[1] , bgr_ref[2] ,
 					bgr_img1[0] , bgr_img1[1] , bgr_img1[2]);
 
@@ -166,6 +171,7 @@ vector<Data> data;
 
 void calcRMSEs(int argc, char* argv[])
 {
+    /*
 	_finddata_t file;
 	long flag;
 	string root = "D:\\Winmad\\RendererGPU\\Release\\Data\\results\\vol_ipt_6_29\\";
@@ -248,6 +254,7 @@ void calcRMSEs(int argc, char* argv[])
 	}
 	fclose(fp);
 	_findclose(flag);
+    */
 }
 
 // int main(int argc, char* argv[])
@@ -261,9 +268,9 @@ IplImage *readImagePFM(const string& fileName)
 {
 	FILE* file;
 	int height, width, f;
-	fopen_s(&file, fileName.c_str(), "rb");
+	file = fopen(fileName.c_str(), "rb");
 
-	fscanf(file, "PF\n%d %d\n%f\n" , &width , &height, &f);
+	fscanf(file, "PF\n%d %d\n%d\n" , &width , &height, &f);
 
 	IplImage *img = cvCreateImage(cvSize(width, height), IPL_DEPTH_32F, 3);
 	float* data = (float*)img->imageData;
@@ -287,7 +294,7 @@ IplImage *readImagePFM(const string& fileName)
 void saveImagePFM(const string& fileName, const IplImage* image)
 {
 	FILE* file;
-	fopen_s(&file, fileName.c_str(), "wb");
+	file = fopen(fileName.c_str(), "wb");
 
 	fprintf(file, "PF\n%d %d\n-1.000000\n", image->width, image->height);
 

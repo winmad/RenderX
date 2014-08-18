@@ -4,7 +4,7 @@
 #include "xmlHelper.h"
 #include <string>
 #include <vector>
-#include "EXT/rapidxml/rapidxml.hpp"
+#include "rapidxml/rapidxml.hpp"
 
 class ConfigManager;
 using namespace rapidxml;

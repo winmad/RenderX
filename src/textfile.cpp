@@ -25,7 +25,7 @@ char *textFileRead(const char *fn) {
 
 	if (fn != NULL) {
 
-		fopen_s(&fp, fn, "rt");
+		fp = fopen(fn, "rt");
 
 		if (fp != NULL) {
       
@@ -50,7 +50,7 @@ int textFileWrite(const char *fn, const char *s) {
 	int status = 0;
 
 	if (fn != NULL) {
-		fopen_s(&fp, fn,"w");
+		fp = fopen(fn,"w");
 
 		if (fp != NULL) {
 			

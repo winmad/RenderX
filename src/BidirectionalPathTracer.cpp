@@ -41,7 +41,8 @@ vector<vec3f> BidirectionalPathTracer::renderPixels(const Camera& camera)
 
 				Ray lightRay = genEmissiveSurfaceSample(true , false);
 
-				samplePath(eyePath, camera.generateRay(p));
+                Ray cameraRay = camera.generateRay(p);
+				samplePath(eyePath, cameraRay);
 
 				samplePath(lightPath, lightRay);
 
@@ -66,7 +67,7 @@ vector<vec3f> BidirectionalPathTracer::renderPixels(const Camera& camera)
 			eyePathList = samplePathList(eyeRayList);
 			lightPathList = samplePathList(lightRayList);
 
-			vector<vector<unsigned>> visibilityList = testPathListVisibility(eyePathList, lightPathList);
+			vector<vector<unsigned> > visibilityList = testPathListVisibility(eyePathList, lightPathList);
 
 #pragma omp parallel for
 			for(int p=0; p<pixelColors.size(); p++)
@@ -330,7 +331,7 @@ void BidirectionalPathTracer::colorByConnectingPaths(vector<omp_lock_t> &pixelLo
 			if(!(color_prob.w > 0))
 				continue;
 
-			if(!(vec3f(color_prob).length())>0)
+			if(!(vec3f(color_prob).length()>0))
 				continue;
 
 			float weight = connectWeight(wholePath, lightConnectID, p_forward, p_backward, distList);

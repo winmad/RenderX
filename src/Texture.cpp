@@ -42,7 +42,7 @@ void Texture::loadFile(const string& fileName)
 
 vec3f Texture::getColor(const vec3f& coord) const
 {
-	vec3f transCoord = coordTransform * vec4f(coord, 1);
+	vec3f transCoord = vec3f(coordTransform * vec4f(coord, 1));
 	float u = transCoord.x*width - 0.5;
 	float v = transCoord.y*height - 0.5;
 
@@ -95,7 +95,7 @@ vec3f Texture::getColor(const vec3f& coord) const
 
 vec3f Texture::getGrad(const vec3f& coord) const
 {
-	vec3f transCoord = coordTransform * vec4f(coord, 1);
+	vec3f transCoord = vec3f(coordTransform * vec4f(coord, 1));
 	float u = transCoord.x*width - 0.5;
 	float v = transCoord.y*height - 0.5;
 

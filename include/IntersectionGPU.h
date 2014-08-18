@@ -4,8 +4,7 @@
 #include "macros.h"
 #include "KDTree.h"
 #include "Shader.h"
-#include <GL/freeglut.h>
-#include <GL/freeglut_ext.h>
+#include <GL/glut.h>
 #include <GL/glew.h>
 #include <sstream>
 

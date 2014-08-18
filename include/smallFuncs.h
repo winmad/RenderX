@@ -50,7 +50,7 @@ inline float intensity(const vec3f& v)
 
 inline bool isIllegal(const vec3f& v)
 {
-	if (_isnan(v.x) || _isnan(v.y) || _isnan((v.z)))
+	if (isnan(v.x) || isnan(v.y) || isnan((v.z)))
 		return true;
 	if (v.x > 1e3f || v.y > 1e3f || v.z > 1e3f)
 		return true;

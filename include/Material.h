@@ -3,7 +3,7 @@
 #include "BSDF.h"
 #include "smallFuncs.h"
 #include "SceneObject.h"
-#include "EXT/rapidxml/rapidxml.hpp"
+#include "rapidxml/rapidxml.hpp"
 #include "xmlHelper.h"
 
 using namespace rapidxml;

@@ -5,7 +5,6 @@
 #include "IsotropicPhaseSampler.h"
 #include "HGPhaseFunc.h"
 #include "IsotropicPhaseFunc.h"
-#include "volumeData.h"
 class SceneVPMObject : public SceneObject
 {
 public:
@@ -70,6 +69,7 @@ public:
 	float getAlbedo() const{
 		return y(ds) / y(dt);
 	}
+    /*
 	void setSSS(std::string name){
 		std::cout << "in VPM setSSS" << " " << name << std::endl;
 		bool success = search_sss_color(name, da, ds);
@@ -79,6 +79,7 @@ public:
 			std::cerr << "sss not found " << std::endl;
 		}
 	}
+    */
 	void setSigma(vec3f sigma_s, vec3f sigma_a){
 		ds = sigma_s;
 		da = sigma_a;

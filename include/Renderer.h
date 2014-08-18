@@ -1,13 +1,11 @@
 #pragma once
-
-
-
 #include "Camera.h"
 #include "Scene.h"
 #include "ConfigManager.h"
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
-#include "MCRenderer.h"
+
+class MCRenderer;
 
 class Renderer
 {

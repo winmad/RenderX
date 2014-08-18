@@ -100,8 +100,8 @@ vector<vec3f> VCMTracer::renderPixels(const Camera& camera)
 				Path eyePath;
 
 				const Path &lightPath = *lightPathList[p];
-
-				samplePath(eyePath, camera.generateRay(p));
+                Ray cameraRay = camera.generateRay(p);
+				samplePath(eyePath, cameraRay);
 
 				colorByMergingPaths(singleImageColors, eyePath, tree);
 
@@ -156,7 +156,7 @@ vector<vec3f> VCMTracer::renderPixels(const Camera& camera)
 			}
 			eyePathList = samplePathList(eyeRayList);
 			lightPathList = samplePathList(lightRayList);
-			vector<vector<unsigned>> visibilityList = testPathListVisibility(eyePathList, lightPathList);
+			vector<vector<unsigned> > visibilityList = testPathListVisibility(eyePathList, lightPathList);
 			
 			vector<LightPathPoint> lppList;
 

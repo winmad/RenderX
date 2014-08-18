@@ -62,6 +62,7 @@
 #define NV_VECTOR_H
 
 #include <iostream>
+#include <cmath>
 
 namespace nv {
 

@@ -21,7 +21,8 @@ vector<vec3f> PathTracerTest::renderPixels(const Camera& camera)
 			for(int p=0; p<pixelColors.size(); p++)
 			{
 				Path eyePath;
-				samplePath(eyePath, camera.generateRay(p));
+                Ray cameraRay = camera.generateRay(p);
+				samplePath(eyePath, cameraRay);
 
 				pixelColors[p] *= s/float(s+1);
 

@@ -1,7 +1,7 @@
 #pragma once
 #include "nvVector.h"
 #include "nvMatrix.h"
-#include "EXT/rapidxml/rapidxml.hpp"
+#include "rapidxml/rapidxml.hpp"
 
 using namespace rapidxml;
 using namespace nv;

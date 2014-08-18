@@ -199,7 +199,7 @@ void Shader::setTexArray2D(const string& varName, const vector<vec4f>& tex, int 
 	glActiveTexture(GL_TEXTURE0+maxTexUnit);
 }
 
-void Shader::setTexArray2D(const string& varName, const vector<vector<vec4f>>& tex)
+void Shader::setTexArray2D(const string& varName, const vector<vector<vec4f> >& tex)
 {
 	GLfloat *pixels;
 	GLuint texID = 0;
