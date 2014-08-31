@@ -28,10 +28,10 @@ void MCRenderer::setSavePath(const string& savePath)
 	unsigned pos2 = savePath.rfind('\\');
 	unsigned pos = pos1 < pos2 ? pos1 : pos2;
 	string folderPath = savePath.substr(0, pos);
-	if(access(folderPath.c_str(), 0) != -1)
+	if(access(folderPath.c_str(), 0) == -1)
 	{
-		//this->savePath = renderer->configManager->getRootPath() + string("/") + savePath;
-        this->savePath = savePath;
+		this->savePath = renderer->configManager->getRootPath() + string("/") + savePath;
+        //this->savePath = savePath;
 	}
 }
 
@@ -408,7 +408,7 @@ void MCRenderer::showCurrentResult(const vector<vec3f>& pixelColors , unsigned* 
 	}
 
 	cvSetMouseCallback("Renderer", mouseEvent, this);
-    printf("savePath = %s\n" , savePath.c_str());
+    //printf("savePath = %s\n" , savePath.c_str());
 	if(savePath != "")
 	{
 		saveImagePFM(savePath, image);
@@ -471,6 +471,9 @@ void MCRenderer::showCurrentResult(const vector<vec3f>& pixelColors , unsigned* 
 			}
 		}
 		break;
+
+        default:
+            break;
 	/*case SHOW_PIXEL_VALUE:
 		printf("%lf, %lf, %lf\n", pixelColors[pathPixelID].x, pixelColors[pathPixelID].y, pixelColors[pathPixelID].z);
 		int x = pathPixelID % renderer->camera.width;

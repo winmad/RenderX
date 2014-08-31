@@ -8,12 +8,10 @@
 using namespace std;
 using namespace nv;
 
-
-
 #define BUFFERSIZE 1024
 
-#define min(a,b) a<b?a:b
-#define max(a,b) a>b?a:b
+//#define min(a,b) a<b?a:b
+//#define max(a,b) a>b?a:b
 
 class SimpleShape
 {

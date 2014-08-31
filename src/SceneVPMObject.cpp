@@ -229,7 +229,9 @@ Ray SceneVPMObject::scatter(const Ray& inRay, const bool russian) const
 		}
 		return outRay;
 	}
- 
+
+    printf("error at SceneVPMObject: should not reach here\n");
+    return outRay;
 }
 
 vec3f SceneVPMObject::getRadianceDecay(const Ray &inRay, const float &dist) const {

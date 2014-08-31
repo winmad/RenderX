@@ -12,7 +12,7 @@ using namespace std;
 typedef unsigned uint;
 #define MAX(a, b) a > b ? a : b
 #define MIN(a, b) a < b ? a : b
-#define PI			3.1415926535897932384626433832795
+#define PI 3.1415926535897932384626433832795
 
 inline float Lerp(float t, float v1, float v2){
 	return (1.f - t) * v1 + t * v2;
@@ -285,7 +285,7 @@ int HeterogeneousVolume::check(const Ray &inRay, float *intersectDist) const{
 	return 0;
 }
 
-#undef max()
+//#undef max()
 float HeterogeneousVolume::integrateDensity(const Ray &inRay, float dist) const{
 	float densityAccumulation = 0;
 	float intersectDist = std::numeric_limits<float>::max();
@@ -773,4 +773,6 @@ Ray HeterogeneousVolume::scatter(const Ray &inRay, const bool russian ) const{
 		}
 		return outRay;
 	}
+    printf("error at SceneHeteroGeneousVolume: cannot reach here\n");
+    return outRay;
 }

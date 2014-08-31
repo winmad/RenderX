@@ -119,7 +119,7 @@ vector<vec3f> VCMTracer::renderPixels(const Camera& camera)
 				pixelColors[i] += singleImageColors[i] / (s + 1);//*camera.width*camera.height;
 				delete lightPathList[i];
 			}
-			printf("Iter: %d  IterTime: %ds  TotalTime: %ds\n", s+1, (clock()-t)/1000, (clock()-t_start)/1000);
+			printf("Iter: %d  IterTime: %lus  TotalTime: %lus\n", s+1, (clock()-t)/1000, (clock()-t_start)/1000);
 
 			//if (clock() / 1000 >= lastTime)
 			if (s % outputIter == 0)
@@ -207,7 +207,7 @@ vector<vec3f> VCMTracer::renderPixels(const Camera& camera)
 				pixelColors[i] *= s / float(s + 1);
 				pixelColors[i] += singleImageColors[i] / (s + 1);//*camera.width*camera.height;
 			}
-			printf("Iter: %d  IterTime: %ds  TotalTime: %ds\n", s+1, (clock()-t)/1000, (clock()-t_start)/1000);
+			printf("Iter: %d  IterTime: %lus  TotalTime: %lus\n", s+1, (clock()-t)/1000, (clock()-t_start)/1000);
 
 			//if (clock() / 1000 >= lastTime)
 			if (s % outputIter == 0)
@@ -488,7 +488,7 @@ void VCMTracer::colorByConnectingPaths(vector<omp_lock_t> &pixelLocks, const Cam
 			if(!(color_prob.w > 0))
 				continue;
 
-			if(!(vec3f(color_prob).length())>0)
+			if(!(vec3f(color_prob).length()>0))
 				continue;
 
 			float weight = connectMergeWeight(wholePath, lightConnectID, false);
@@ -540,79 +540,51 @@ void VCMTracer::colorByConnectingPaths(vector<omp_lock_t> &pixelLocks, const Cam
 	}
 }
 
+struct Query;
+
 void VCMTracer::colorByMergingPaths(vector<vec3f>& colors, const Path& eyePath, PointKDTree<LightPathPoint>& tree)
 {
-	struct Query
-	{
-		vec3f color;
+    struct Query
+    {
+        vec3f color;
 
-		VCMTracer *tracer;
-		const Path* eyePath;
-		unsigned eyePathLen;
-		Path wholePath;
+        VCMTracer *tracer;
+        const Path* eyePath;
+        unsigned eyePathLen;
+        Path wholePath;
 
-		int cnt;
+        int cnt;
 
-		Query(VCMTracer* tracer) { this->tracer = tracer; }
+        Query(VCMTracer* tracer) { this->tracer = tracer; }
 
-		void process(const LightPathPoint& lpp)
-		{
-			//Ray lightRay = (*lpp.path)[lpp.index];
-			//if (lightRay.direction.length() < 0.5f)
-			//	return;
-			/*
-			Ray cameraRay = (*eyePath)[eyePathLen - 1];
-			if (cameraRay.insideObject && cameraRay.contactObject == NULL)
-			{
-				if (lightRay.insideObject == NULL ||
-					lightRay.contactObject != NULL ||
-					cameraRay.insideObject != lightRay.insideObject ||
-					!cameraRay.insideObject->canMerge ||
-					!lightRay.insideObject->canMerge)
-				{
-					return;
-				}
-			}
-			else if (cameraRay.contactObject)
-			{
-				if (lightRay.contactObject != cameraRay.contactObject ||
-					!lightRay.contactObject->canMerge ||
-					!cameraRay.contactObject->canMerge)
-				{
-					return;
-				}
-			}
-			else
-			{
-				return;
-			}
-			*/
-			if(!lpp.path || lpp.index < 0)
-				return ;
-			wholePath.assign(lpp.path->begin(), lpp.path->begin()+lpp.index);
-			for(unsigned i=0; i<eyePathLen; i++)
-			{
-				wholePath.push_back((*eyePath)[eyePathLen-i-1]);
-			}
-			if (!tracer->connectRays(wholePath, lpp.index-1, true))
-				return;
+        void process(const LightPathPoint& lpp)
+        {
+            if(!lpp.path || lpp.index < 0)
+            return ;
+            wholePath.assign(lpp.path->begin(), lpp.path->begin()+lpp.index);
+            for(unsigned i=0; i<eyePathLen; i++)
+            {
+                wholePath.push_back((*eyePath)[eyePathLen-i-1]);
+            }
+            if (!tracer->connectRays(wholePath, lpp.index-1, true))
+            return;
 
-			vec4<float> color_prob = tracer->connectColorProb(wholePath, lpp.index-1, true);
-			if(vec3f(color_prob).length()==0 || color_prob.w==0)
-				return;
-			float weight = tracer->connectMergeWeight(wholePath, lpp.index-1, true);
-			vec3f res = vec3f(color_prob) / color_prob.w * weight;
+            vec4<float> color_prob = tracer->connectColorProb(wholePath, lpp.index-1, true);
+            if(vec3f(color_prob).length()==0 || color_prob.w==0)
+            return;
+            float weight = tracer->connectMergeWeight(wholePath, lpp.index-1, true);
+            vec3f res = vec3f(color_prob) / color_prob.w * weight;
 
-			color += res;
+            color += res;
 			
-			//fprintf(fp , "res = (%.7f,%.7f,%.7f), c = (%.7f,%.7f,%.7f), prob = %.7f, weight = %.7f\n" ,
-			//	res[0] , res[1] , res[2] , color_prob[0] , color_prob[1] , color_prob[2] , color_prob.w , weight);
-			cnt++;
+            //fprintf(fp , "res = (%.7f,%.7f,%.7f), c = (%.7f,%.7f,%.7f), prob = %.7f, weight = %.7f\n" ,
+            //	res[0] , res[1] , res[2] , color_prob[0] , color_prob[1] , color_prob[2] , color_prob.w , weight);
+            cnt++;
 			
-		}
-	};
-
-	Query query(this);
+        }
+    };
+    
+    Query query(this);
 	query.eyePath = &eyePath;
 
 	for(unsigned ei=1; ei<eyePath.size(); ei++)
@@ -628,7 +600,7 @@ void VCMTracer::colorByMergingPaths(vector<vec3f>& colors, const Path& eyePath, 
 		query.color = vec3f(0, 0, 0);
 		query.eyePathLen = ei + 1;
 		query.cnt = 0;
-
+        
 		tree.searchInRadius(0, eyePath[ei].origin, mergeRadius, query);
 		//if (query.cnt > 0)
 		//	fprintf(fp , "===================\n");

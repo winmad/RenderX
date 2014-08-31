@@ -81,10 +81,6 @@ public:
 	virtual vec3f getBSDF(const Ray& inRay, const Ray& outRay) const;
 	virtual vec3f getRadianceDecay(const Ray& inRay, const float& dist) const;
 
-	virtual ~SceneObject()
-	{
-		for(unsigned i=0; i<materialList.size(); i++)
-			delete materialList[i];
-	}
+	virtual ~SceneObject();
 };
 

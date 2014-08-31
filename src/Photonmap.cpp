@@ -219,7 +219,7 @@ void PhotonMap::throughputByDensityEstimation(vec3f &color, Path &eyeMergePath,
 			if(volumeMedia && lightPoint.photonType != Ray::INVOL)		return ;
 			if(!volumeMedia && lightPoint.photonType != Ray::OUTVOL)	return ;	
 
-			if(!lightPoint.pathThePointIn || lightPoint.indexInThePath < 0)
+			if(!lightPoint.pathThePointIn)// || lightPoint.indexInThePath < 0)
 				return;
 
 			Path &lightPath = *lightPoint.pathThePointIn;

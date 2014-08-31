@@ -193,7 +193,7 @@ void ConfigManager::load(const string &configFilePath)
 	{
 		string path = nodeGroupObj->first_node("filePath")->value();
 		
-		if(access(path.c_str(), 0) != -1)
+		if(access(path.c_str(), 0) == -1)
 		{
 			path = rootFolder + '/' + path;
 		}
@@ -235,7 +235,7 @@ void ConfigManager::load(const string &configFilePath)
 			nodeMat = nodeObj->first_node("Material");
 
 		string path = nodeObj->first_node("filePath")->value();
-		if(access(path.c_str(), 0) != -1)
+		if(access(path.c_str(), 0) == -1)
 		{
 			path = rootFolder + '/' + path;
 		}
@@ -388,7 +388,7 @@ xml_node<>* ConfigManager::findNode(const string& filePath, const string& nodeTa
 	if(filePath == "")
 		return NULL;
 	string fullFilePath = filePath;
-	if(access(filePath.c_str(), 0) != -1)
+	if(access(filePath.c_str(), 0) == -1)
 		fullFilePath = rootFolder + string("/") + filePath;
 	xml_document<> *doc;
 	if(path_doc.find(fullFilePath) != path_doc.end())

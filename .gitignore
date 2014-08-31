@@ -1,5 +1,6 @@
 data/
 build/
+xcode/
 *.bmp
 *.pfm
 *.log

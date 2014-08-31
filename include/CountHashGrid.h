@@ -75,7 +75,7 @@ public:
 
 	void preprocess(Scene *scene , int objIndex)
 	{
-		printf("preprocess volume object \#%d...\n" , objIndex);
+		printf("preprocess volume object %d...\n" , objIndex);
 
 		effectiveIndex.clear();
 		effectiveWeights.clear();
@@ -186,9 +186,9 @@ public:
 
 	int GetCellIndex(const vec3i &aCoord) const
 	{
-		uint x = uint(aCoord.x);
-		uint y = uint(aCoord.y);
-		uint z = uint(aCoord.z);
+		int x = int(aCoord.x);
+		int y = int(aCoord.y);
+		int z = int(aCoord.z);
 
 		if (x < 0 || x >= sizeNum || y < 0 || y >= sizeNum || z < 0 || z >= sizeNum)
 		{

@@ -1,13 +1,22 @@
-#pragma once
+#ifndef POINT_KD_TREE
+#define POINT_KD_TREE
 
 #include "nvVector.h"
 #include <vector>
+#include <cstdint>
 #include <limits>
+#include <algorithm>
+#include <cmath>
 
 typedef float Real;
 typedef nv::vec3f Vector3;
 
 #define INF std::numeric_limits<float>::infinity()
+
+inline Real myabs(const Real& x)
+{
+	return (x < -1e-6 ? -x : x);
+}
 
 struct KdNode
 {
@@ -25,7 +34,7 @@ struct KdNode
 
 	void initLeaf()
 	{
-		splitAxis = -1;
+		splitAxis = 3;
 		rightChild = (1 << 29) - 1;
 		hasLeftChild = 0;
 	}
@@ -112,7 +121,7 @@ void PointKDTree<NodeData>::buildTree(uint32_t nodeNum ,
 
 	Vector3 diag = r - l;
 	Real tmp = -INF;
-	int splitAxis = -1;
+	int splitAxis = 3;
 	for (int i = 0; i <= 2; i++)
 	{
 		if (tmp < diag[i])
@@ -150,9 +159,9 @@ void PointKDTree<NodeData>::searchInRadius(uint32_t nodeNum , const Vector3& pos
 
 	int axis = node->splitAxis;
 
-	Real delta = std::abs(pos[axis] - node->splitPos);
+	Real delta = myabs(pos[axis] - node->splitPos);
 
-	if (axis != -1)
+	if (axis != 3)
 	{
 		if (pos[axis] <= node->splitPos)
 		{
@@ -185,10 +194,9 @@ void PointKDTree<NodeData>::searchKnn(uint32_t nodeNum , const Vector3& pos ,
 
 	int axis = node->splitAxis;
 
-	Real delta2 = powf(pos[axis] - node->splitPos, 2);
-
-	if (axis != -1)
+	if (axis != 3)
 	{
+		Real delta2 = powf(pos[axis] - node->splitPos, 2);
 		if (pos[axis] <= node->splitPos)
 		{
 			if (node->hasLeftChild)
@@ -210,3 +218,5 @@ void PointKDTree<NodeData>::searchKnn(uint32_t nodeNum , const Vector3& pos ,
 	if (dist2 < query.maxSqrDis)
 		query.process(&nodeData[nodeNum] , dist2);
 }
+
+#endif

@@ -2,6 +2,13 @@
 #include "SceneObject.h"
 #include "UniformSphericalSampler.h"
 #include "CountHashGrid.h"
+#include "Material.h"
+
+SceneObject::~SceneObject()
+{
+    for(unsigned i=0; i<materialList.size(); i++)
+        delete materialList[i];
+}
 
 SceneObject* SceneObject::findInsideObject(const Ray& ray) const
 { 

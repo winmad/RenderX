@@ -463,7 +463,7 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 				interPathList[i] = NULL;
 		}
 
-		printf("Iter: %d  IterTime: %ds  TotalTime: %ds\n", s, (clock()-t)/1000, clock()/1000);
+		printf("Iter: %d  IterTime: %lus  TotalTime: %lus\n", s, (clock()-t)/CLOCKS_PER_SEC, clock()/CLOCKS_PER_SEC);
 
 		if ((useUniformInterSampler && s == 0) || (!useUniformInterSampler && s == 1))
 		{

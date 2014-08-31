@@ -79,7 +79,7 @@ vector<vec3f> PathTracerTest::renderPixels(const Camera& camera)
 			}
 
 			showCurrentResult(pixelColors);
-			printf("Iter: %d  IterTime: %ds  TotalTime: %ds\n", s+1, (clock()-t)/1000, (clock()-t_start)/1000);
+			printf("Iter: %d  IterTime: %lus  TotalTime: %lus\n", s+1, (clock()-t)/1000, (clock()-t_start)/1000);
 		}
 	}
 	return pixelColors;
