@@ -98,7 +98,7 @@ public:
 	{ 
 		alpha = 2.f / 3.f;
 		spp = 1; 
-        samplesPerPixel = 256;
+        samplesPerPixel = 1;
 		mergeRatio = 1.f;
 		timeInterval = lastTime = 3600;
 		gatherRadius = 0.f;
