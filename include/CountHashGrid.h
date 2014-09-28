@@ -330,8 +330,8 @@ public:
 			fprintf(fp , "=====================\n");
 			fprintf(fp , "pos = (%.8f, %.8f, %.8f) , dir = (%.8f, %.8f, %.8f)\n" , ray.origin.x , ray.origin.y , ray.origin.z ,
 				ray.direction.x , ray.direction.y , ray.direction.z);
-			fprintf(fp , "insideObj = %d, contactObj = %d, intersectObj = %d , t = %.8f\n" , ray.insideObject , ray.contactObject , 
-				ray.intersectObject , ray.intersectDist);
+			/* fprintf(fp , "insideObj = %d, contactObj = %d, intersectObj = %d , t = %.8f\n" , ray.insideObject , ray.contactObject , */
+				/* ray.intersectObject , ray.intersectDist); */
 			fprintf(fp , "index = %d, accuWeight = %.8f\n" , effectiveIndex[i] , effectiveWeights[i]);
 		}
 	}

@@ -53,7 +53,11 @@ void Renderer::render()
 void Renderer::waitForCommand()
 {
 	int key = cvWaitKey(10);
+#if defined(_WIN32)
+	loadConfig("../data/Config.xml");
+#else
 	loadConfig("Config.xml");
+#endif
 	//while (key != 'q')
 	//{
 	//	preview();

@@ -1,0 +1,246 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{7ED7FB77-24E2-435F-B212-05ED0B3EF531}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>Renderer</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <TargetName>IPT</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>external_win/rapidxml;external_win/OPENCV/include</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>external_win/OPENCV/lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opencv_core247d.lib;opencv_highgui247d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>EXT/OPENCV/include;EXT/rapidxml</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>EXT/OPENCV/lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opencv_core247d.lib;opencv_highgui247d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../external_win/OPENCV/include;../external_win/;../external_win/glew/include;../external_win/freeglut/include;../include</AdditionalIncludeDirectories>
+      <OpenMPSupport>true</OpenMPSupport>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>../external_win/OPENCV/lib;../external_win/freeglut/lib;../external_win/glew/lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opencv_core247.lib;opencv_highgui247.lib;glew32.lib;freeglut.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>EXT/OPENCV/include;EXT/rapidxml;EXT/glew/include;EXT/freeglut/include</AdditionalIncludeDirectories>
+      <OpenMPSupport>true</OpenMPSupport>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>EXT/OPENCV/lib;EXT/freeglut/lib;EXT/glew/lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opencv_core247.lib;opencv_highgui247.lib;glew32.lib;freeglut.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\BidirectionalPathTracer.h" />
+    <ClInclude Include="..\include\BSDF.h" />
+    <ClInclude Include="..\include\Camera.h" />
+    <ClInclude Include="..\include\ConfigManager.h" />
+    <ClInclude Include="..\include\CosineSphericalSampler.h" />
+    <ClInclude Include="..\include\CountHashGrid.h" />
+    <ClInclude Include="..\include\DiffuseBSDF.h" />
+    <ClInclude Include="..\include\DiffuseMaterial.h" />
+    <ClInclude Include="..\include\DistanceSampler.h" />
+    <ClInclude Include="..\include\GlossyBSDF.h" />
+    <ClInclude Include="..\include\GlossyMaterial.h" />
+    <ClInclude Include="..\include\Hashgrid.h" />
+    <ClInclude Include="..\include\HGPhaseFunc.h" />
+    <ClInclude Include="..\include\HGPhaseSampler.h" />
+    <ClInclude Include="..\include\HomoMediaDistSampler.h" />
+    <ClInclude Include="..\include\IntersectionGPU.h" />
+    <ClInclude Include="..\include\IptTracer.h" />
+    <ClInclude Include="..\include\IsotropicPhaseFunc.h" />
+    <ClInclude Include="..\include\IsotropicPhaseSampler.h" />
+    <ClInclude Include="..\include\KDTree.h" />
+    <ClInclude Include="..\include\LocalFrame.h" />
+    <ClInclude Include="..\include\macros.h" />
+    <ClInclude Include="..\include\Material.h" />
+    <ClInclude Include="..\include\MCRenderer.h" />
+    <ClInclude Include="..\include\NewBidirectionalPathTracer.h" />
+    <ClInclude Include="..\include\NoSelfIntersectionCondition.h" />
+    <ClInclude Include="..\include\PathTracer.h" />
+    <ClInclude Include="..\include\PathTracerTest.h" />
+    <ClInclude Include="..\include\Photonmap.h" />
+    <ClInclude Include="..\include\PointKDTree.h" />
+    <ClInclude Include="..\include\RandGenerator.h" />
+    <ClInclude Include="..\include\Ray.h" />
+    <ClInclude Include="..\include\RefractiveMaterial.h" />
+    <ClInclude Include="..\include\Renderer.h" />
+    <ClInclude Include="..\include\Scene.h" />
+    <ClInclude Include="..\include\SceneDiffuseObject.h" />
+    <ClInclude Include="..\include\SceneEmissiveObject.h" />
+    <ClInclude Include="..\include\SceneGlossyObject.h" />
+    <ClInclude Include="..\include\SceneHeterogeneousVolume.h" />
+    <ClInclude Include="..\include\SceneObject.h" />
+    <ClInclude Include="..\include\SceneParallelLight.h" />
+    <ClInclude Include="..\include\ScenePhongObject.h" />
+    <ClInclude Include="..\include\SceneReflectiveObject.h" />
+    <ClInclude Include="..\include\SceneRefractiveObject.h" />
+    <ClInclude Include="..\include\SceneVPMObject.h" />
+    <ClInclude Include="..\include\Shader.h" />
+    <ClInclude Include="..\include\SimpleShape.h" />
+    <ClInclude Include="..\include\smallFuncs.h" />
+    <ClInclude Include="..\include\SphericalSampler.h" />
+    <ClInclude Include="..\include\stdafx.h" />
+    <ClInclude Include="..\include\targetver.h" />
+    <ClInclude Include="..\include\textfile.h" />
+    <ClInclude Include="..\include\Texture.h" />
+    <ClInclude Include="..\include\TimeManager.h" />
+    <ClInclude Include="..\include\UniformSphericalSampler.h" />
+    <ClInclude Include="..\include\VCMTracer.h" />
+    <ClInclude Include="..\include\xmlHelper.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\BidirectionalPathTracer.cpp" />
+    <ClCompile Include="..\src\Camera.cpp" />
+    <ClCompile Include="..\src\ConfigManager.cpp" />
+    <ClCompile Include="..\src\DiffuseMaterial.cpp" />
+    <ClCompile Include="..\src\GlossyMaterial.cpp" />
+    <ClCompile Include="..\src\IntersectionGPU.cpp" />
+    <ClCompile Include="..\src\IptTracer.cpp" />
+    <ClCompile Include="..\src\KDTree.cpp" />
+    <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\src\Material.cpp" />
+    <ClCompile Include="..\src\MCRenderer.cpp" />
+    <ClCompile Include="..\src\NewBidirectionalPathTracer.cpp" />
+    <ClCompile Include="..\src\NoSelfIntersectionCondition.cpp" />
+    <ClCompile Include="..\src\PathTracer.cpp" />
+    <ClCompile Include="..\src\PathTracerTest.cpp" />
+    <ClCompile Include="..\src\Photonmap.cpp" />
+    <ClCompile Include="..\src\RandGenerator.cpp" />
+    <ClCompile Include="..\src\Ray.cpp" />
+    <ClCompile Include="..\src\RefractiveMaterial.cpp" />
+    <ClCompile Include="..\src\Renderer.cpp" />
+    <ClCompile Include="..\src\Scene.cpp" />
+    <ClCompile Include="..\src\SceneEmissiveObject.cpp" />
+    <ClCompile Include="..\src\SceneHeterogeneousVolume.cpp" />
+    <ClCompile Include="..\src\SceneObject.cpp" />
+    <ClCompile Include="..\src\SceneParallelLight.cpp" />
+    <ClCompile Include="..\src\SceneVPMObject.cpp" />
+    <ClCompile Include="..\src\Shader.cpp" />
+    <ClCompile Include="..\src\SimpleShape.cpp" />
+    <ClCompile Include="..\src\stdafx.cpp" />
+    <ClCompile Include="..\src\textfile.cpp" />
+    <ClCompile Include="..\src\Texture.cpp" />
+    <ClCompile Include="..\src\TimeManager.cpp" />
+    <ClCompile Include="..\src\VCMTracer.cpp" />
+    <ClCompile Include="..\src\xmlHelper.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

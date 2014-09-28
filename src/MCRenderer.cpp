@@ -28,10 +28,11 @@ void MCRenderer::setSavePath(const string& savePath)
 	unsigned pos2 = savePath.rfind('\\');
 	unsigned pos = pos1 < pos2 ? pos1 : pos2;
 	string folderPath = savePath.substr(0, pos);
+    this->savePath = savePath;
 	if(access(folderPath.c_str(), 0) == -1)
 	{
 		this->savePath = renderer->configManager->getRootPath() + string("/") + savePath;
-        //this->savePath = savePath;
+        // this->savePath = savePath;
 	}
 }
 

@@ -1,0 +1,330 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="头文件\SceneObject">
+      <UniqueIdentifier>{bcf05e1b-3091-42fc-84c3-4aacaf652996}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\SceneObject">
+      <UniqueIdentifier>{4044d670-2a8c-495e-a3e0-99d2199ea88f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\GPU">
+      <UniqueIdentifier>{c52f8160-544d-43d7-a3b1-1204eab9397e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\GPU">
+      <UniqueIdentifier>{345d6998-ddbf-494e-8354-c45492b695c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Tracer">
+      <UniqueIdentifier>{735e45f6-d294-4aec-a1ec-82f82bd08edb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Tracer">
+      <UniqueIdentifier>{dd49740c-b965-4aa4-a227-6a9edf0bc611}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Material">
+      <UniqueIdentifier>{978ba7ca-563c-437f-9fd1-3c7759dbe3a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\BSDF">
+      <UniqueIdentifier>{01e1c2ef-22b1-49d8-b243-0b67517b7e42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Sampler">
+      <UniqueIdentifier>{3ce88215-d46e-4efa-83bd-de8b9d2e0a10}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Material">
+      <UniqueIdentifier>{a3abd7f0-9717-4f3e-a943-ed40fa424059}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Accleration">
+      <UniqueIdentifier>{016c31da-65fc-429b-886a-40441a534775}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Acceleration">
+      <UniqueIdentifier>{2aba3fd1-3d0b-40cb-8ac2-05f26db0f85f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\CountHashGrid.h">
+      <Filter>头文件\Accleration</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Hashgrid.h">
+      <Filter>头文件\Accleration</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\KDTree.h">
+      <Filter>头文件\Accleration</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\PointKDTree.h">
+      <Filter>头文件\Accleration</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\BSDF.h">
+      <Filter>头文件\BSDF</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\DiffuseBSDF.h">
+      <Filter>头文件\BSDF</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\GlossyBSDF.h">
+      <Filter>头文件\BSDF</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\HGPhaseFunc.h">
+      <Filter>头文件\BSDF</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\IsotropicPhaseFunc.h">
+      <Filter>头文件\BSDF</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\IntersectionGPU.h">
+      <Filter>头文件\GPU</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Shader.h">
+      <Filter>头文件\GPU</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\DiffuseMaterial.h">
+      <Filter>头文件\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\GlossyMaterial.h">
+      <Filter>头文件\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Material.h">
+      <Filter>头文件\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\RefractiveMaterial.h">
+      <Filter>头文件\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Texture.h">
+      <Filter>头文件\Material</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\CosineSphericalSampler.h">
+      <Filter>头文件\Sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\DistanceSampler.h">
+      <Filter>头文件\Sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\HGPhaseSampler.h">
+      <Filter>头文件\Sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\HomoMediaDistSampler.h">
+      <Filter>头文件\Sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\IsotropicPhaseSampler.h">
+      <Filter>头文件\Sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SphericalSampler.h">
+      <Filter>头文件\Sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\UniformSphericalSampler.h">
+      <Filter>头文件\Sampler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Camera.h">
+      <Filter>头文件\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SceneDiffuseObject.h">
+      <Filter>头文件\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SceneEmissiveObject.h">
+      <Filter>头文件\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SceneGlossyObject.h">
+      <Filter>头文件\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SceneHeterogeneousVolume.h">
+      <Filter>头文件\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SceneObject.h">
+      <Filter>头文件\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SceneParallelLight.h">
+      <Filter>头文件\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ScenePhongObject.h">
+      <Filter>头文件\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SceneReflectiveObject.h">
+      <Filter>头文件\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SceneRefractiveObject.h">
+      <Filter>头文件\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SceneVPMObject.h">
+      <Filter>头文件\SceneObject</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\BidirectionalPathTracer.h">
+      <Filter>头文件\Tracer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\IptTracer.h">
+      <Filter>头文件\Tracer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\NewBidirectionalPathTracer.h">
+      <Filter>头文件\Tracer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\PathTracer.h">
+      <Filter>头文件\Tracer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\PathTracerTest.h">
+      <Filter>头文件\Tracer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Photonmap.h">
+      <Filter>头文件\Tracer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\VCMTracer.h">
+      <Filter>头文件\Tracer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ConfigManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\LocalFrame.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\macros.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\MCRenderer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\NoSelfIntersectionCondition.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\RandGenerator.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Ray.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Renderer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Scene.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SimpleShape.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\smallFuncs.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\stdafx.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\targetver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\textfile.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\xmlHelper.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\TimeManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\KDTree.cpp">
+      <Filter>源文件\Acceleration</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\IntersectionGPU.cpp">
+      <Filter>源文件\GPU</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Shader.cpp">
+      <Filter>源文件\GPU</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\DiffuseMaterial.cpp">
+      <Filter>源文件\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\GlossyMaterial.cpp">
+      <Filter>源文件\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Material.cpp">
+      <Filter>源文件\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\RefractiveMaterial.cpp">
+      <Filter>源文件\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Texture.cpp">
+      <Filter>源文件\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Camera.cpp">
+      <Filter>源文件\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SceneEmissiveObject.cpp">
+      <Filter>源文件\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SceneHeterogeneousVolume.cpp">
+      <Filter>源文件\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SceneObject.cpp">
+      <Filter>源文件\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SceneParallelLight.cpp">
+      <Filter>源文件\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SceneVPMObject.cpp">
+      <Filter>源文件\SceneObject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\BidirectionalPathTracer.cpp">
+      <Filter>源文件\Tracer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\IptTracer.cpp">
+      <Filter>源文件\Tracer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\NewBidirectionalPathTracer.cpp">
+      <Filter>源文件\Tracer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\PathTracer.cpp">
+      <Filter>源文件\Tracer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\PathTracerTest.cpp">
+      <Filter>源文件\Tracer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Photonmap.cpp">
+      <Filter>源文件\Tracer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\VCMTracer.cpp">
+      <Filter>源文件\Tracer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ConfigManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\MCRenderer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\NoSelfIntersectionCondition.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\RandGenerator.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Ray.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Renderer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Scene.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SimpleShape.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stdafx.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\textfile.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\TimeManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\xmlHelper.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

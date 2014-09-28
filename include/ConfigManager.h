@@ -2,13 +2,14 @@
 
 #ifdef __APPLE__
     #include <sys/uio.h>
+	#include <unistd.h>
 #else
     #include <io.h>
+	#define access _access
 #endif
 
 #include "textfile.h"
 #include <rapidxml/rapidxml.hpp>
-#include <unistd.h>
 #include <string>
 #include <unordered_map>
 #include "xmlHelper.h"

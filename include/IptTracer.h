@@ -8,6 +8,7 @@
 #include "CountHashGrid.h"
 #include "macros.h"
 #include "SceneVPMObject.h"
+#include "TimeManager.h"
 
 static FILE *fp2 = fopen("debug_ipt_gather_y.txt" , "w");
 
@@ -87,13 +88,17 @@ public:
 	bool isDebug;
 
 	int pixelNum , lightPathNum , cameraPathNum , interPathNum , partialPathNum;
+    int samplesPerPixel;
 	int totPathNum;
 	int lightPhotonNum , partialPhotonNum;
+
+    TimeManager timer;
 
 	IptTracer(Renderer* renderer) : MCRenderer(renderer)
 	{ 
 		alpha = 2.f / 3.f;
-		spp = -1; 
+		spp = 1; 
+        samplesPerPixel = 256;
 		mergeRatio = 1.f;
 		timeInterval = lastTime = 3600;
 		gatherRadius = 0.f;

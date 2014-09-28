@@ -9,5 +9,10 @@ using namespace nv;
 #define max2(a, b) a > b ? a : b
 #define min2(a, b) a < b ? a : b
 
+#if defined(_WIN32)
+	#define isnan _isnan
+	#define M_PI 3.14159265358979323846f
+#endif
+
 typedef vec2<double> vec2d;
 typedef vec3<double> vec3d;

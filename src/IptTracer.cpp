@@ -68,9 +68,10 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 	if (totVol > 1e-6f && totArea > 1e-6f)
 		partialPathNum = interPathNum / 2;
 
-	unsigned startTime = clock();
+	//unsigned startTime = clock();
+    timer.StartStopWatch();
 
-	for(unsigned s=0; s<=spp; s++)
+	for(unsigned s=0; s<spp; s++)
 	{
 		partPathMergeIndex.resize(interPathNum);
 
@@ -101,8 +102,12 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 			mergeRadius = r0 * powf(powf(max(base , 1.f) , alpha - 1.f) , 1.f / 2.f);
 			gatherRadius = gr0 * powf(powf(max(base , 1.f) , alpha - 1.f) , 1.f / 2.f);
 		}
+        // not reduce radius
 		mergeRadius = r0;
 		mergeRadius = std::max(mergeRadius , 1e-7f);
+
+        // not reduce radius
+        gatherRadius = gr0;
 		gatherRadius = std::max(gatherRadius , 1e-7f);
 
 		printf("mergeRadius = %.8f, gatherRadius = %.8f\n" , mergeRadius , gatherRadius);
@@ -111,7 +116,8 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 
 		string cmd;
 
-		unsigned t = clock();
+		//unsigned t = clock();
+        timer.PushCurrentTime();
 
 		vector<Path*> lightPathList(lightPathNum , NULL);
 		vector<Path*> interPathList(interPathNum, NULL);
@@ -222,16 +228,19 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 				}
 			}
 			
-
 #pragma omp parallel for
-			for(int p=0; p<cameraPathNum; p++)
+            for (int p = 0; p < pixelNum; p++)
 			{
 				//fprintf(fp2 , "========== pixel id = %d ==========\n" , p);
-				Path eyePath;
-				Ray cameraRay = camera.generateRay(p);
-				sampleMergePath(eyePath , cameraRay , 0);
-				singleImageColors[p] += colorByRayMarching(eyePath , partialSubPaths , p);
-				
+                for (int sid = 0; sid < samplesPerPixel; sid++)
+                {
+                    Path eyePath;
+                    //Ray cameraRay = camera.generateRay(p , sid , samplesPerPixel);
+                    Ray cameraRay = camera.generateRay(p);
+                    sampleMergePath(eyePath , cameraRay , 0);
+                    singleImageColors[p] += colorByRayMarching(eyePath , partialSubPaths , p);
+                }
+                singleImageColors[p] /= (float)samplesPerPixel;
 				// abandon all the rest!
 				/*
 				samplePath(eyePath, camera.generateRay(p));
@@ -463,7 +472,8 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 				interPathList[i] = NULL;
 		}
 
-		printf("Iter: %d  IterTime: %lus  TotalTime: %lus\n", s, (clock()-t)/CLOCKS_PER_SEC, clock()/CLOCKS_PER_SEC);
+		printf("Iter: %d  IterTime: %.3lfs  TotalTime: %.3lfs\n", s, timer.PopCurrentTime(),
+            timer.GetElapsedTime(0));
 
 		if ((useUniformInterSampler && s == 0) || (!useUniformInterSampler && s == 1))
 		{
@@ -483,7 +493,7 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 		//if (clock() / 1000 >= lastTime)
 		if (s % outputIter == 0 && !isDebug)
 		{
-			unsigned nowTime = (clock() - startTime) / 1000;
+			unsigned nowTime = (unsigned)timer.GetElapsedTime(0);
 			showCurrentResult(pixelColors , &nowTime , &s);
 			//showCurrentResult(pixelColors , &lastTime , &s);
 			//lastTime += timeInterval;

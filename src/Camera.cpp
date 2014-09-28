@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "Camera.h"
 
-Ray Camera::generateRay(unsigned pixelID , bool flag) const
+Ray Camera::generateRayBase(float x , float y) const
 {
 	vec3f front = focus - position;
 	front.normalize();
@@ -9,42 +9,60 @@ Ray Camera::generateRay(unsigned pixelID , bool flag) const
 	right.normalize();
 	vec3f orthoUp = right.cross(front);
 	Ray ray;
-	int x = pixelID % width;
-	int y = pixelID / width;
+	float xp = x - (width/2.0);
+	float yp = (height/2.0) - y;
 
-	float u = RandGenerator::genFloat();
-	float v = RandGenerator::genFloat();
-
-	float xc = x + 0.5 - (width/2.0);
-	float yc = (height/2.0) - 0.5 - y;
-
-	ray.direction = front*sightDist + right * (x + u - (width/2.0)) + orthoUp * ((height/2.0) - v - y);
+	ray.direction = front*sightDist + right * xp + orthoUp * yp;
 	ray.direction.normalize();
 	ray.color = vec3f(1, 1, 1);
 	ray.origin = position;
 	ray.contactObject = (SceneObject*)this;
-
-	if(!scene->usingGPU() || flag)
-	{
-		Scene::ObjSourceInformation osi;
-		ray.intersectDist = scene->intersect(ray, osi);
-		ray.intersectObjectTriangleID = osi.triangleID;
-		ray.intersectObject = (ray.intersectDist >= 0) ? scene->objects[osi.objID] : NULL;
-	}
-
+    if (!scene->usingGPU())
+    {
+        Scene::ObjSourceInformation osi;
+        ray.intersectDist = scene->intersect(ray, osi);
+        ray.intersectObjectTriangleID = osi.triangleID;
+        ray.intersectObject = (ray.intersectDist >= 0) ? scene->objects[osi.objID] : NULL;
+    }
 	ray.insideObject = scene->findInsideObject(ray);
-	float dist = sqrt(xc*xc+yc*yc+sightDist*sightDist);
+	float dist = sqrt(xp*xp+yp*yp+sightDist*sightDist);
 
-	//ray.directionProb = powf(dist, 3) / sightDist;
 	ray.directionProb = 1.f;
 
 	ray.directionSampleType = Ray::RANDOM;
 	ray.originSampleType = Ray::DEFINITE;
-	ray.pixelID = pixelID;
 
-	//if (x == 42 && y == 233)
-	//	printf("pixel=(%d,%d), dir=(%.3f,%.3f,%.3f)\n" , x , y , ray.direction.x , ray.direction.y , ray.direction.z);
-	return ray;
+    return ray;
+}
+
+Ray Camera::generateRay(unsigned pixelID , bool flag) const
+{
+    int x = pixelID % width;
+    int y = pixelID / width;
+    float xp = (float)x + RandGenerator::genFloat();
+    float yp = (float)y + RandGenerator::genFloat();
+    Ray ray = generateRayBase(xp , yp);
+    ray.pixelID = pixelID;
+    return ray;
+}
+
+Ray Camera::generateRay(unsigned pixelID , int sampleID , int totSamples) const
+{
+    int x = pixelID % width;
+    int y = pixelID / width;
+    
+    int size = (int)sqrt((float)totSamples);
+    int sx = sampleID % size;
+    int sy = sampleID / size;
+
+    float u = (float)sx / (float)size + RandGenerator::genFloat() / (float)size;
+    float v = (float)sy / (float)size + RandGenerator::genFloat() / (float)size;
+
+    float xp = (float)x + u;
+    float yp = (float)y + v;
+    Ray ray = generateRayBase(xp , yp);
+    ray.pixelID = pixelID;
+    return ray;
 }
 
 float Camera::get_dw(unsigned pixelID) const
