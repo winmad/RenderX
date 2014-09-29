@@ -183,6 +183,7 @@ void ConfigManager::load(const string &configFilePath)
 	xml_node<> *nodeSceneConfig = nodeConfig->first_node("Scene");
 
 	path_name = getPathAndName(nodeSceneConfig);
+    // printf("scene path = %s , %s\n" , path_name.first.c_str() , path_name.second.c_str());
 	xml_node<> *nodeScene = findNode(path_name.first, "Scene", path_name.second);
 	if(!nodeScene)
 		nodeScene = findNode(configFilePath, "Scene", path_name.second);
@@ -377,7 +378,23 @@ void ConfigManager::load(const string &configFilePath)
 			renderer->mcRenderer->setMaxDepth(atoi(nodeRenderer->first_node("maxDepth")->value()));
 	}
 
-	if(nodeConfig->first_node("savePath"))
+    xml_node<> *nodeTime = nodeConfig->first_node("time");
+    if (nodeTime)
+    {
+        double runtime = 0.0;
+        if (nodeTime->first_node("hours"))
+        {
+            runtime += 3600.0 * atoi(nodeTime->first_node("hours")->value());
+        }
+        if (nodeTime->first_node("minutes"))
+        {
+            runtime += 60.0 * atoi(nodeTime->first_node("minutes")->value());
+        }
+        // printf("set runtime = %.1lfs\n" , runtime);
+        renderer->mcRenderer->setRuntime(runtime);
+    }
+
+    if(nodeConfig->first_node("savePath"))
 	{
 		renderer->mcRenderer->setSavePath(nodeConfig->first_node("savePath")->value());
 	}

@@ -53,6 +53,8 @@ protected:
 
 	int outputIter;
 
+    double runtime;
+    
 	vector<Ray> showPath;
 
 	void samplePath(Path& path, Ray& startRay) const;
@@ -92,11 +94,15 @@ protected:
 	bool connectRays(Path& path, int connectIndex, bool merged = false);
 
 public:
-
 	void setMaxDepth(const int _maxDepth)
 	{
 		maxDepth = (unsigned)_maxDepth;
 	}
+
+    void setRuntime(const double _runtime)
+    {
+        runtime = _runtime;
+    }
 
 	int getMaxDepth()
 	{

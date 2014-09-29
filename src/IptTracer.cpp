@@ -500,6 +500,8 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 		}
 		else
 			showCurrentResult(pixelColors);
+
+        if (timer.GetElapsedTime(0) > runtime) break;
 	}	
 
 	for(int i=0; i<pixelLocks.size(); i++)
