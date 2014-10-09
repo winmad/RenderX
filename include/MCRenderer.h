@@ -49,6 +49,8 @@ protected:
 
 	unsigned maxDepth;
 
+    int samplesPerPixel;
+    
 	unsigned pathPixelID;
 
 	int outputIter;
@@ -104,17 +106,23 @@ public:
         runtime = _runtime;
     }
 
+    void setSpp(const int _spp)
+    {
+        samplesPerPixel = _spp;
+    }
+    
 	int getMaxDepth()
 	{
 		return maxDepth;
 	}
-
-	void setSavePath(const string& savePath);
+    
+    void setSavePath(const string& savePath);
 
 	MCRenderer(Renderer *renderer)
 	{
 		this->renderer = renderer; 
 		maxDepth = 20;
+        samplesPerPixel = 1;
 		pathPixelID = -1;
 		useMerge = false;
 		outputIter = 5;

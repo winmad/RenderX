@@ -107,7 +107,7 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 		mergeRadius = std::max(mergeRadius , 1e-7f);
 
         // not reduce radius
-        gatherRadius = gr0;
+        //gatherRadius = gr0;
 		gatherRadius = std::max(gatherRadius , 1e-7f);
 
 		printf("mergeRadius = %.8f, gatherRadius = %.8f\n" , mergeRadius , gatherRadius);

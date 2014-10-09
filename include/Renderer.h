@@ -22,7 +22,7 @@ public:
 	void loadConfig(const string& configFilePath);
 	void showWindow() { cvNamedWindow("Renderer"); }
 	void preview();
-	void waitForCommand();
+	void waitForCommand(const string& filename);
 	void render();
 	Renderer();
 	~Renderer();

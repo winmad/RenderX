@@ -50,13 +50,13 @@ void Renderer::render()
 	vector<vec3f> pixelColors = mcRenderer->renderPixels(camera);
 }
 
-void Renderer::waitForCommand()
+void Renderer::waitForCommand(const string& filename)
 {
 	int key = cvWaitKey(10);
 #if defined(_WIN32)
-	loadConfig("../data/Config.xml");
+	loadConfig("../data/" + filename);
 #else
-	loadConfig("Config.xml");
+	loadConfig(filename);
 #endif
 	//while (key != 'q')
 	//{
