@@ -7,9 +7,9 @@
 using namespace std;
 
 void writeConfig(string fileName , int *hours , int *mins , string scenePath ,
-    string sceneName , string algo , int *spp , int *maxDepth , double *radius ,
-    double *gatherRadius , int *pathNum , double *pathRatio , double *mergeRatio ,
-    int *useUniformSur , int *useDirIllu , int *isDebug , string savePath)
+                 string sceneName , string algo , int *spp , int *maxDepth , double *radius ,
+                 double *gatherRadius , int *pathNum , double *pathRatio , double *mergeRatio ,
+                 int *useUniformSur , int *useDirIllu , int *isDebug , string savePath)
 {
     string str;
     char buf[128];
@@ -29,13 +29,13 @@ void writeConfig(string fileName , int *hours , int *mins , string scenePath ,
         }
         str += " </time>\n";
     }
-
+    
     str += " <Scene>\n";
     str += "  <path>" + scenePath + "</path>\n";
     str += "  <name>" + sceneName + "</name>\n";
     str += "  <camera>c1</camera>\n";
     str += " </Scene>\n";
-
+    
     str += " <Renderer>\n";
     str += "  <type>" + algo + "</type>\n";
     if (spp != NULL)
@@ -73,9 +73,9 @@ void writeConfig(string fileName , int *hours , int *mins , string scenePath ,
         sprintf(buf , "%.6f" , *mergeRatio);
         str += "  <mergeRatio>" + string(buf) + "</mergeRatio>\n";
     }
-
+    
     str += "  <usePPM>0</usePPM>\n";
-
+    
     if (useUniformSur != NULL)
     {
         sprintf(buf , "%d" , *useUniformSur);
@@ -92,11 +92,11 @@ void writeConfig(string fileName , int *hours , int *mins , string scenePath ,
         str += "  <isDebug>" + string(buf) + "</isDebug>\n";
     }
     str += " </Renderer>\n";
-
+    
     str += " <savePath>" + savePath + "</savePath>\n";
-
+    
     str += "</Config>\n";
-
+    
     FILE *fp = fopen(fileName.c_str() , "w");
     fprintf(fp , "%s" , str.c_str());
     fclose(fp);
@@ -104,7 +104,7 @@ void writeConfig(string fileName , int *hours , int *mins , string scenePath ,
 
 int main()
 {
-    int mins = 15;
+    int mins = 10;
     int N = 0;
     
     int spp[4];
@@ -113,35 +113,31 @@ int main()
     int maxDepth = 40;
     
     double radius[4];
-    radius[0] = 0.0005; radius[1] = 0.0007; radius[2] = 0.001; radius[3] = 0.0003;
+    radius[0] = 0.001; radius[1] = 0.003; radius[2] = 0.005; radius[3] = 0.01;
     
-    double gatherRadius[4];
-    gatherRadius[0] = 0.001; gatherRadius[1] = 0.003;
-    gatherRadius[2] = 0.005; gatherRadius[3] = 0.01;
-
     int pathNum[4];
-    pathNum[0] = 100000; pathNum[1] = 500000; pathNum[2] = 1500000;
-
+    pathNum[0] = 100000; pathNum[0] = 500000; pathNum[1] = 1500000;
+    
     double mergeRatio = 1;
     int useDirIllu = 0;
     int isDebug = 1;
     
     char buf[128];
     for (int a = 0; a < 2; a++)
-    for (int b = 0; b < 4; b++)
-    for (int c = 0; c < 4; c++)
-    for (int d = 0; d < 3; d++)
-    for (double pathRatio = 0.2; pathRatio < 1.001; pathRatio += 0.3)
-    for (int useUniformSur = 0; useUniformSur < 2; useUniformSur++)
-    {
-        N++;
-        sprintf(buf , "%d" , N);
-        string fileName = "vol_scene/vol_config_" + string(buf) + ".xml";
-        string savePath = "results/vol_scene/vol_" + string(buf) + ".pfm";
-        writeConfig(fileName , NULL , &mins , "Scene_test.xml" ,
-            "VolScene" , "IPT" , &spp[a] , &maxDepth , &radius[b] ,
-            &gatherRadius[c] , &pathNum[d] , &pathRatio , &mergeRatio ,
-            &useUniformSur , &useDirIllu , &isDebug , savePath);
-    }
+        for (int b = 0; b < 4; b++)
+            for (int c = 0; c < 4; c++)
+                for (int d = 0; d < 3; d++)
+                    for (double pathRatio = 0.2; pathRatio < 1.001; pathRatio += 0.3)
+                        for (int useUniformSur = 0; useUniformSur < 2; useUniformSur++)
+                        {
+                            N++;
+                            sprintf(buf , "%d" , N);
+                            string fileName = "cb_config_" + string(buf) + ".xml";
+                            string savePath = "results/cornell_box/cb_" + string(buf) + ".pfm";
+                            writeConfig(fileName , NULL , &mins , "scenes/2balls_cornell_box.xml" ,
+                                        "Balls" , "IPT" , &spp[a] , &maxDepth , &radius[b] ,
+                                        &radius[c] , &pathNum[d] , &pathRatio , &mergeRatio ,
+                                        &useUniformSur , &useDirIllu , &isDebug , savePath);
+                        }
     return 0;
 }
