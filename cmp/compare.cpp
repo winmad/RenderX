@@ -159,15 +159,78 @@ struct Data
 	int iter , time;
 	double rmse;
 
+	Data(int _iter , double _rmse) : iter(_iter) , rmse(_rmse) {}
 	Data(int _iter , int _time , double _rmse) : iter(_iter) , time(_time) , rmse(_rmse) {}
 
 	bool operator <(const Data& rhs)
 	{
-		return iter < rhs.iter;
+		//return iter < rhs.iter;
+		return rmse < rhs.rmse;
 	}
 };
 
 vector<Data> data;
+
+void calcRMSE_cb()
+{
+	_finddata_t file;
+	long flag;
+	string root = "D:\\Winmad\\RenderX\\Release\\results\\cornell_box\\";
+	flag = _findfirst("D:\\Winmad\\RenderX\\Release\\results\\cornell_box\\*.pfm" , &file);
+	FILE *fp = fopen("D:\\Winmad\\RenderX\\Release\\results\\cornell_box_rmse.txt" , "w");
+
+	IplImage *ref = convert_to_float32(readImagePFM("D:\\Winmad\\RenderX\\Release\\results\\cb_vcm_ref_oct_10.pfm"));
+
+	volMask.resize(ref->height * ref->width);
+	for (int i = 0; i < ref->height * ref->width; i++)
+		volMask[i] = 1;
+
+	for (;;)
+	{
+		printf("%s\n", file.name);
+		IplImage *img = convert_to_float32(readImagePFM(root + file.name));
+
+		double rmse = CalculateRMSE(img , ref);
+
+		string name = file.name;
+		string str = "";
+
+		int index = -1;
+
+		for (int i = 0; i < name.length(); i++)
+		{
+			if (name[i] == '_')
+			{
+				str = "";
+				continue;
+			}
+			if (name[i] == '.')
+			{
+				index = atoi(str.c_str());
+				break;
+			}
+			str += name[i];
+		}
+
+		cvReleaseImage(&img);
+
+		if (index != -1)
+		{
+			data.push_back(Data(index , rmse));
+		}
+
+		if (_findnext(flag , &file) == -1)
+			break;
+	}
+
+	sort(data.begin() , data.end());
+	for (int i = 0; i < data.size(); i++)
+	{
+		fprintf(fp , "%d %.8lf\n" , data[i].iter , data[i].rmse);
+	}
+	fclose(fp);
+	_findclose(flag);
+}
 
 void calcRMSEs(int argc, char* argv[])
 {
@@ -256,14 +319,15 @@ void calcRMSEs(int argc, char* argv[])
 	_findclose(flag);
     */
 }
-
+/*
 int main(int argc, char* argv[])
 {
-	cmpTwoImages(argc , argv);
+	// cmpTwoImages(argc , argv);
 	// calcRMSEs(argc , argv);
+	calcRMSE_cb();
 	return 0;
 }
-
+*/
 IplImage *readImagePFM(const string& fileName)
 {
 	FILE* file;

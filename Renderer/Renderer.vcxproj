@@ -74,6 +74,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <TargetName>IPT_x64</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -141,8 +142,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>../external_win/OPENCV/lib;../external_win/freeglut/lib;../external_win/glew/lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opencv_core247.lib;opencv_highgui247.lib;glew32.lib;freeglut.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../external_win/glew-1.11.0/lib/Release MX/x64;../external_win/OPENCV/lib;../external_win/freeglut_x64/lib;../external_win/glew-1.11.0/lib/Release/x64</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opencv_core245.lib;opencv_highgui245.lib;freeglut.lib;glew32.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
