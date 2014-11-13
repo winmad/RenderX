@@ -94,7 +94,7 @@ vector<vec3f> BidirectionalPathTracer::renderPixels(const Camera& camera)
 		printf("Iter: %d  IterTime: %lus  TotalTime: %lus\n", s+1, (clock()-t)/1000, (clock()-t_start)/1000);
 
 		//if (clock() / 1000 >= lastTime)
-		if (s % outputIter == 0)
+		if (s % 200 == 0)
 		{
 			unsigned nowTime = clock() / 1000;
 			showCurrentResult(pixelColors , &nowTime , &s);

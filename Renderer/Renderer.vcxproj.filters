@@ -326,5 +326,8 @@
     <ClCompile Include="..\src\xmlHelper.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="..\cmp\compare.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

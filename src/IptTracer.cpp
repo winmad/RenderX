@@ -203,8 +203,7 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 			mergePartialPaths(cmdLock);
 
 			PointKDTree<IptPathState> partialSubPaths(partialSubPathList);
-			
-			
+				
 			for (int i = 0; i < partialPhotonNum; i++)
 			{
 				IptPathState& subPath = partialSubPathList[i];
@@ -228,10 +227,11 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 				}
 			}
 			
-#pragma omp parallel for
+//#pragma omp parallel for
             for (int p = 0; p < pixelNum; p++)
 			{
-				//fprintf(fp2 , "========== pixel id = %d ==========\n" , p);
+				fprintf(fp2 , "========== pixel id = %d ==========\n" , p);
+				fprintf(fp3 , "========== pixel id = %d ==========\n" , p);
                 for (int sid = 0; sid < samplesPerPixel; sid++)
                 {
                     Path eyePath;
@@ -1326,6 +1326,54 @@ vec3f IptTracer::colorByRayMarching(Path& eyeMergePath , PointKDTree<IptPathStat
 			{
 				vec3f dirIllu = colorByConnectingLights(eyeMergePath[i - 1] , eyeMergePath[i]);
 				surfaceRes += dirIllu;
+			}
+
+			vec3f dirVar , indirVar , totVar;
+			vec3f dirAve , indirAve , totAve;
+			dirVar = indirVar = totVar = vec3f(0.f);
+			dirAve = indirAve = totAve = vec3f(0.f);
+			float dirN = (float)query.dirColors.size();
+			float indirN = (float)query.indirColors.size();
+			float totN = dirN + indirN;
+			for (int i = 0; i < query.dirColors.size(); i++)
+			{
+				dirAve += query.dirColors[i];
+				totAve += query.dirColors[i];
+			}
+			for (int i = 0; i < query.indirColors.size(); i++)
+			{
+				indirAve += query.indirColors[i];
+				totAve += query.indirColors[i];
+			}
+			if (dirN > 0)
+				dirAve /= (float)query.dirColors.size();
+			if (indirN > 0)
+				indirAve /= (float)query.indirColors.size();
+			if (totN > 0)
+				totAve /= (float)query.dirColors.size() + (float)query.indirColors.size();
+			for (int i = 0; i < query.dirColors.size(); i++)
+			{
+				dirVar += (query.dirColors[i] - dirAve) * (query.dirColors[i] - dirAve);
+				totVar += (query.dirColors[i] - totAve) * (query.dirColors[i] - totAve);
+			}
+			for (int i = 0; i < query.indirColors.size(); i++)
+			{
+				indirVar += (query.indirColors[i] - indirAve) * (query.indirColors[i] - indirAve);
+				totVar += (query.indirColors[i] - totAve) * (query.indirColors[i] - totAve);
+			}
+			if (dirN > 1)
+				dirVar /= (dirN - 1.f);
+			if (indirN > 1)
+				indirVar /= (indirN - 1.f);
+			if (totN > 1)
+				totVar /= (totN - 1.f);
+
+			if (totN >= 2)
+			{
+				fprintf(fp3 , "%.0f %.0f %.0f\n" , dirN , indirN , totN);
+				fprintf(fp3 , "dirVar = (%.6f,%.6f,%.6f)\n" , dirVar.x , dirVar.y , dirVar.z);
+				fprintf(fp3 , "indirVar = (%.6f,%.6f,%.6f)\n" , indirVar.x , indirVar.y , indirVar.z);
+				fprintf(fp3 , "totVar = (%.6f,%.6f,%.6f)\n" , totVar.x , totVar.y , totVar.z);
 			}
 
 			break;

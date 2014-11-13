@@ -175,11 +175,17 @@ void calcRMSE_cb()
 {
 	_finddata_t file;
 	long flag;
+	//string root = "D:\\Winmad\\RenderX\\x64\\results\\vol_scene\\";
+	//flag = _findfirst("D:\\Winmad\\RenderX\\x64\\results\\vol_scene\\*.pfm" , &file);
+	//FILE *fp = fopen("D:\\Winmad\\RenderX\\x64\\results\\vol_scene_rmse.txt" , "w");
+
+	//IplImage *ref = convert_to_float32(readImagePFM("D:\\Winmad\\mitsuba\\VolScene\\vol_ref_10w.pfm"));
+
 	string root = "D:\\Winmad\\RenderX\\Release\\results\\cornell_box\\";
 	flag = _findfirst("D:\\Winmad\\RenderX\\Release\\results\\cornell_box\\*.pfm" , &file);
-	FILE *fp = fopen("D:\\Winmad\\RenderX\\Release\\results\\cornell_box_rmse.txt" , "w");
+	FILE *fp = fopen("D:\\Winmad\\RenderX\\x64\\results\\cb_rmse.txt" , "w");
 
-	IplImage *ref = convert_to_float32(readImagePFM("D:\\Winmad\\RenderX\\Release\\results\\cb_vcm_ref_oct_10.pfm"));
+	IplImage *ref = convert_to_float32(readImagePFM("D:\\Winmad\\RenderX\\Release\\results\\cb_PT_ref.pfm"));
 
 	volMask.resize(ref->height * ref->width);
 	for (int i = 0; i < ref->height * ref->width; i++)
