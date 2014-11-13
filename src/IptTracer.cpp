@@ -38,6 +38,10 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 	useUniformInterSampler = (useUniformSur && useUniformVol);
 
 	vector<vec3f> pixelColors(camera.width * camera.height, vec3f(0, 0, 0));
+
+	vars.resize(camera.width * camera.height , 0.0);
+	varColors.resize(camera.width * camera.height , vec3f(0, 0, 0));
+
 	vector<omp_lock_t> pixelLocks(pixelColors.size());
 	volMask.resize(camera.width * camera.height);
 
@@ -228,6 +232,7 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 			}
 			
 //#pragma omp parallel for
+			double maxVar = 0.0;
             for (int p = 0; p < pixelNum; p++)
 			{
 				fprintf(fp2 , "========== pixel id = %d ==========\n" , p);
@@ -239,6 +244,9 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
                     Ray cameraRay = camera.generateRay(p);
                     sampleMergePath(eyePath , cameraRay , 0);
                     singleImageColors[p] += colorByRayMarching(eyePath , partialSubPaths , p);
+
+					// Lock
+					maxVar = max(vars[p] , maxVar);
                 }
                 singleImageColors[p] /= (float)samplesPerPixel;
 				// abandon all the rest!
@@ -362,6 +370,22 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 				}
 				*/
 			}
+
+			IplImage *varImg = cvCreateImage(cvSize(camera.width, camera.height), IPL_DEPTH_32F, 3);
+			for (int p = 0; p < pixelNum; p++)
+			{
+				varColors[p] = convertLuminanceToRGB((double)vars[p] / 3000);
+			}
+			for(int x=0; x<renderer->camera.width; x++)
+			{
+				for(unsigned y=0; y<renderer->camera.height; y++)
+				{
+					vec3f rgb = varColors[y*renderer->camera.width + x];
+					vec3f &bgr = ((vec3f*)varImg->imageData)[y*renderer->camera.width + x];
+					bgr = vec3f(rgb.z, rgb.y, rgb.x);
+				}
+			}
+			saveImagePFM("vars.pfm" , varImg);
 		}
 		else
 		{
@@ -1328,22 +1352,32 @@ vec3f IptTracer::colorByRayMarching(Path& eyeMergePath , PointKDTree<IptPathStat
 				surfaceRes += dirIllu;
 			}
 
-			vec3f dirVar , indirVar , totVar;
-			vec3f dirAve , indirAve , totAve;
-			dirVar = indirVar = totVar = vec3f(0.f);
-			dirAve = indirAve = totAve = vec3f(0.f);
+			//vec3f dirVar , indirVar , totVar;
+			//vec3f dirAve , indirAve , totAve;
+			//dirVar = indirVar = totVar = vec3f(0.f);
+			//dirAve = indirAve = totAve = vec3f(0.f);
+
+			double dirVar , indirVar , totVar;
+			double dirAve , indirAve , totAve;
+			dirVar = indirVar = totVar = 0;
+			dirAve = indirAve = totAve = 0;
+
 			float dirN = (float)query.dirColors.size();
 			float indirN = (float)query.indirColors.size();
 			float totN = dirN + indirN;
 			for (int i = 0; i < query.dirColors.size(); i++)
 			{
-				dirAve += query.dirColors[i];
-				totAve += query.dirColors[i];
+				//dirAve += query.dirColors[i];
+				//totAve += query.dirColors[i];
+				dirAve += intensity(query.dirColors[i]);
+				totAve += intensity(query.dirColors[i]);
 			}
 			for (int i = 0; i < query.indirColors.size(); i++)
 			{
-				indirAve += query.indirColors[i];
-				totAve += query.indirColors[i];
+				//indirAve += query.indirColors[i];
+				//totAve += query.indirColors[i];
+				indirAve += intensity(query.indirColors[i]);
+				totAve += intensity(query.indirColors[i]);
 			}
 			if (dirN > 0)
 				dirAve /= (float)query.dirColors.size();
@@ -1353,13 +1387,17 @@ vec3f IptTracer::colorByRayMarching(Path& eyeMergePath , PointKDTree<IptPathStat
 				totAve /= (float)query.dirColors.size() + (float)query.indirColors.size();
 			for (int i = 0; i < query.dirColors.size(); i++)
 			{
-				dirVar += (query.dirColors[i] - dirAve) * (query.dirColors[i] - dirAve);
-				totVar += (query.dirColors[i] - totAve) * (query.dirColors[i] - totAve);
+				//dirVar += (query.dirColors[i] - dirAve) * (query.dirColors[i] - dirAve);
+				//totVar += (query.dirColors[i] - totAve) * (query.dirColors[i] - totAve);
+				dirVar += (intensity(query.dirColors[i]) - dirAve) * (intensity(query.dirColors[i]) - dirAve);
+				totVar += (intensity(query.dirColors[i]) - totAve) * (intensity(query.dirColors[i]) - totAve);
 			}
 			for (int i = 0; i < query.indirColors.size(); i++)
 			{
-				indirVar += (query.indirColors[i] - indirAve) * (query.indirColors[i] - indirAve);
-				totVar += (query.indirColors[i] - totAve) * (query.indirColors[i] - totAve);
+				//indirVar += (query.indirColors[i] - indirAve) * (query.indirColors[i] - indirAve);
+				//totVar += (query.indirColors[i] - totAve) * (query.indirColors[i] - totAve);
+				indirVar += (intensity(query.indirColors[i]) - indirAve) * (intensity(query.indirColors[i]) - indirAve);
+				totVar += (intensity(query.indirColors[i]) - totAve) * (intensity(query.indirColors[i]) - totAve);
 			}
 			if (dirN > 1)
 				dirVar /= (dirN - 1.f);
@@ -1371,10 +1409,13 @@ vec3f IptTracer::colorByRayMarching(Path& eyeMergePath , PointKDTree<IptPathStat
 			if (totN >= 2)
 			{
 				fprintf(fp3 , "%.0f %.0f %.0f\n" , dirN , indirN , totN);
-				fprintf(fp3 , "dirVar = (%.6f,%.6f,%.6f)\n" , dirVar.x , dirVar.y , dirVar.z);
-				fprintf(fp3 , "indirVar = (%.6f,%.6f,%.6f)\n" , indirVar.x , indirVar.y , indirVar.z);
-				fprintf(fp3 , "totVar = (%.6f,%.6f,%.6f)\n" , totVar.x , totVar.y , totVar.z);
+				//fprintf(fp3 , "dirVar = (%.6f,%.6f,%.6f)\n" , dirVar.x , dirVar.y , dirVar.z);
+				//fprintf(fp3 , "indirVar = (%.6f,%.6f,%.6f)\n" , indirVar.x , indirVar.y , indirVar.z);
+				//fprintf(fp3 , "totVar = (%.6f,%.6f,%.6f)\n" , totVar.x , totVar.y , totVar.z);
+				fprintf(fp3 , "dirVar = %.6f , indirVar = %.6f , totVar = %.6f\n" , dirVar , indirVar , totVar);
 			}
+
+			vars[pixelID] = totVar;
 
 			break;
 		}

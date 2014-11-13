@@ -9,6 +9,7 @@
 #include "macros.h"
 #include "SceneVPMObject.h"
 #include "TimeManager.h"
+#include "visualizeUtils.h"
 
 static FILE *fp2 = fopen("debug_ipt_gather_y.txt" , "w");
 static FILE *fp3 = fopen("debug_ipt_gather_var.txt" , "w");
@@ -50,6 +51,9 @@ protected:
 	vector<pair<int , int> > edgeToRemove;
 
 	vector<bool> volMask;
+
+	vector<double> vars;
+	vector<vec3f> varColors;
 
 	bool dfs(int depth , int cur);
 

@@ -204,6 +204,7 @@
     <ClInclude Include="..\include\TimeManager.h" />
     <ClInclude Include="..\include\UniformSphericalSampler.h" />
     <ClInclude Include="..\include\VCMTracer.h" />
+    <ClInclude Include="..\include\visualizeUtils.h" />
     <ClInclude Include="..\include\xmlHelper.h" />
   </ItemGroup>
   <ItemGroup>
