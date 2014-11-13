@@ -207,6 +207,7 @@
     <ClInclude Include="..\include\xmlHelper.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\cmp\compare.cpp" />
     <ClCompile Include="..\src\BidirectionalPathTracer.cpp" />
     <ClCompile Include="..\src\Camera.cpp" />
     <ClCompile Include="..\src\ConfigManager.cpp" />

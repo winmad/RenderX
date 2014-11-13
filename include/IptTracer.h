@@ -11,6 +11,7 @@
 #include "TimeManager.h"
 
 static FILE *fp2 = fopen("debug_ipt_gather_y.txt" , "w");
+static FILE *fp3 = fopen("debug_ipt_gather_var.txt" , "w");
 
 struct IptPathState
 {
@@ -96,7 +97,7 @@ public:
 	IptTracer(Renderer* renderer) : MCRenderer(renderer)
 	{ 
 		alpha = 2.f / 3.f;
-		spp = -1; 
+		spp = 1; 
 		mergeRatio = 1.f;
 		timeInterval = lastTime = 3600;
 		gatherRadius = 0.f;
@@ -154,12 +155,18 @@ public:
 struct GatherQuery
 {
 	vec3f color;
+	std::vector<vec3f> dirColors , indirColors;
 	IptTracer *tracer;
 	IptPathState* cameraState;
 	bool constKernel;
 	double mergeNum;
 
-	GatherQuery(IptTracer* tracer) { this->tracer = tracer; mergeNum = 0; constKernel = true; }
+	GatherQuery(IptTracer* tracer) 
+	{
+		color = vec3f(0.f);
+		this->tracer = tracer; mergeNum = 0; constKernel = true; 
+		dirColors.clear(); indirColors.clear();
+	}
 
 	void process(IptPathState& lightState)
 	{
@@ -210,6 +217,7 @@ struct GatherQuery
 			totContrib = lightState.throughput;
 		else
 			totContrib = lightState.indirContrib;
+
 		//totContrib = lightState.indirContrib;
 
 		vec3f tmp = totContrib * bsdfFactor * cameraState->throughput; 
@@ -278,10 +286,18 @@ struct GatherQuery
 			res *= weightFactor;
 		}
 
-// 		if (lightState.index < tracer->lightPhotonNum)
-// 			fprintf(fp2 , "dir , contrib = (%.4f,%.4f,%.4f)\n" , res.x , res.y , res.z);
-// 		else
-// 			fprintf(fp2 , "indir , contrib = (%.4f,%.4f,%.4f)\n" , res.x , res.y , res.z);
+		if (lightState.index < tracer->lightPhotonNum)
+		{
+			fprintf(fp2 , "dir , contrib = (%.4f,%.4f,%.4f) , thr = (%.4f,%.4f,%.4f)\n" , res.x , res.y , res.z ,
+				lightState.throughput.x , lightState.throughput.y , lightState.throughput.z);
+			dirColors.push_back(res * 1e3);
+		}
+		else
+		{
+			fprintf(fp2 , "indir , contrib = (%.4f,%.4f,%.4f) , thr = (%.4f,%.4f,%.4f)\n" , res.x , res.y , res.z ,
+				lightState.indirContrib.x , lightState.indirContrib.y , lightState.indirContrib.z);
+			indirColors.push_back(res * 1e3);
+		}
 
 		color += res;
 		/*
