@@ -57,5 +57,5 @@ AUX_SOURCE_DIRECTORY(src/ CPP_SOURCES)
 add_executable(RenderX ${CPP_SOURCES})
 target_link_libraries(RenderX ${ALL_LIBS})
 
-add_executable(cmp cmp/compare.cpp)
-target_link_libraries(cmp ${ALL_LIBS})
+#add_executable(cmp cmp/compare.cpp)
+#target_link_libraries(cmp ${ALL_LIBS})
