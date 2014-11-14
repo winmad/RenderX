@@ -90,7 +90,6 @@ public:
 	bool useWeight , usePPM , useDirIllu , useRayMarching , checkCycle;
 	bool useUniformInterSampler , useUniformSur , useUniformVol , useUniformDir;
 	bool useConstantKernel;
-	bool isDebug;
 
 	int pixelNum , lightPathNum , cameraPathNum , interPathNum , partialPathNum;
 	int totPathNum;
@@ -101,7 +100,7 @@ public:
 	IptTracer(Renderer* renderer) : MCRenderer(renderer)
 	{ 
 		alpha = 2.f / 3.f;
-		spp = 1; 
+		spp = -1; 
 		mergeRatio = 1.f;
 		timeInterval = lastTime = 3600;
 		gatherRadius = 0.f;
@@ -222,7 +221,10 @@ struct GatherQuery
 		else
 			totContrib = lightState.indirContrib;
 
-		//totContrib = lightState.indirContrib;
+		// !!! for experiment !!!
+		totContrib = lightState.indirContrib;
+		//if (lightState.pathLen <= 1)
+		//	totContrib = vec3f(0.f);
 
 		vec3f tmp = totContrib * bsdfFactor * cameraState->throughput; 
 

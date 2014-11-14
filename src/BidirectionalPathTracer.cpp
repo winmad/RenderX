@@ -94,7 +94,7 @@ vector<vec3f> BidirectionalPathTracer::renderPixels(const Camera& camera)
 		printf("Iter: %d  IterTime: %lus  TotalTime: %lus\n", s+1, (clock()-t)/1000, (clock()-t_start)/1000);
 
 		//if (clock() / 1000 >= lastTime)
-		if (s % 200 == 0)
+		if (s % 200 == 0 && !isDebug)
 		{
 			unsigned nowTime = clock() / 1000;
 			showCurrentResult(pixelColors , &nowTime , &s);
@@ -276,7 +276,8 @@ void BidirectionalPathTracer::colorByConnectingPaths(vector<omp_lock_t> &pixelLo
 		int lplStart = (wholePathLen - int(maxEyePathLen)) > 0 ? (wholePathLen - maxEyePathLen) : 0;
 		int lplEnd = wholePathLen - 1 < maxLightPathLen ? wholePathLen - 1 : maxLightPathLen;
 
-		//if(!(wholePathLen == 3)) continue;
+		// !!! for experiment !!!
+		//if(wholePathLen == 3) continue;
 
 		for(int lightPathLen = lplStart; lightPathLen <= lplEnd; lightPathLen++)
 		{

@@ -33,6 +33,10 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 		mergeIterations = 0;
 		useWeight = false;
 	}
+
+	//!!! for experiment !!!
+	useWeight = false;
+
 	cameraPathNum = pixelNum;
 	
 	useUniformInterSampler = (useUniformSur && useUniformVol);
@@ -107,11 +111,11 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 			gatherRadius = gr0 * powf(powf(max(base , 1.f) , alpha - 1.f) , 1.f / 2.f);
 		}
         // not reduce radius
-		mergeRadius = r0;
+		//mergeRadius = r0;
 		mergeRadius = std::max(mergeRadius , 1e-7f);
 
         // not reduce radius
-        //gatherRadius = gr0;
+        gatherRadius = gr0;
 		gatherRadius = std::max(gatherRadius , 1e-7f);
 
 		printf("mergeRadius = %.8f, gatherRadius = %.8f\n" , mergeRadius , gatherRadius);
@@ -225,8 +229,8 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 						contrib = subPath.indirContrib;
 						if (intensity(contrib) < 1e-6f)
 							continue;
-						fprintf(fp , "==============\n");
-						fprintf(fp , "indirContrib=(%.8f,%.8f,%.8f), pathNum = %.1lf\n" , contrib.x , contrib.y , contrib.z , subPath.mergedPath);
+						//fprintf(fp , "==============\n");
+						//fprintf(fp , "indirContrib=(%.8f,%.8f,%.8f), pathNum = %.1lf\n" , contrib.x , contrib.y , contrib.z , subPath.mergedPath);
 					}			
 				}
 			}
@@ -235,8 +239,8 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 			double maxVar = 0.0;
             for (int p = 0; p < pixelNum; p++)
 			{
-				fprintf(fp2 , "========== pixel id = %d ==========\n" , p);
-				fprintf(fp3 , "========== pixel id = %d ==========\n" , p);
+				//fprintf(fp2 , "========== pixel id = %d ==========\n" , p);
+				//fprintf(fp3 , "========== pixel id = %d ==========\n" , p);
                 for (int sid = 0; sid < samplesPerPixel; sid++)
                 {
                     Path eyePath;
@@ -385,7 +389,7 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 					bgr = vec3f(rgb.z, rgb.y, rgb.x);
 				}
 			}
-			saveImagePFM("vars.pfm" , varImg);
+			//saveImagePFM("vars.pfm" , varImg);
 		}
 		else
 		{
@@ -1408,11 +1412,12 @@ vec3f IptTracer::colorByRayMarching(Path& eyeMergePath , PointKDTree<IptPathStat
 
 			if (totN >= 2)
 			{
-				fprintf(fp3 , "%.0f %.0f %.0f\n" , dirN , indirN , totN);
+				//fprintf(fp3 , "%.0f %.0f %.0f\n" , dirN , indirN , totN);
+
 				//fprintf(fp3 , "dirVar = (%.6f,%.6f,%.6f)\n" , dirVar.x , dirVar.y , dirVar.z);
 				//fprintf(fp3 , "indirVar = (%.6f,%.6f,%.6f)\n" , indirVar.x , indirVar.y , indirVar.z);
 				//fprintf(fp3 , "totVar = (%.6f,%.6f,%.6f)\n" , totVar.x , totVar.y , totVar.z);
-				fprintf(fp3 , "dirVar = %.6f , indirVar = %.6f , totVar = %.6f\n" , dirVar , indirVar , totVar);
+				//fprintf(fp3 , "dirVar = %.6f , indirVar = %.6f , totVar = %.6f\n" , dirVar , indirVar , totVar);
 			}
 
 			vars[pixelID] = totVar;
@@ -1566,7 +1571,9 @@ void IptTracer::mergePartialPaths(vector<vec3f>& contribs , vector<double>& merg
 			if (factor.x >= 1.f || factor.y >= 1.f || factor.z >= 1.f)
 				printf("(%.8f,%.8f,%.8f)\n" , factor.x , factor.y , factor.z);
 			*/
-			res *= weightFactor;
+
+			if (tracer->useWeight)
+				res *= weightFactor;
 
 			color += res;
 			mergedPath += lightState.mergedPath;
