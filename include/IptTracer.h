@@ -117,7 +117,7 @@ public:
 		useUniformVol = true;
 		useUniformDir = false;
 
-		useConstantKernel = false;
+		useConstantKernel = true;
 
 		checkCycle = true;
 		checkCycleIters = 100;
@@ -294,14 +294,14 @@ struct GatherQuery
 
 		if (lightState.index < tracer->lightPhotonNum)
 		{
-			fprintf(fp2 , "dir , contrib = (%.4f,%.4f,%.4f) , thr = (%.4f,%.4f,%.4f)\n" , res.x , res.y , res.z ,
-				lightState.throughput.x , lightState.throughput.y , lightState.throughput.z);
+			//fprintf(fp2 , "dir , contrib = (%.4f,%.4f,%.4f) , thr = (%.4f,%.4f,%.4f)\n" , res.x , res.y , res.z ,
+			//	lightState.throughput.x , lightState.throughput.y , lightState.throughput.z);
 			dirColors.push_back(res * 1e3);
 		}
 		else
 		{
-			fprintf(fp2 , "indir , contrib = (%.4f,%.4f,%.4f) , thr = (%.4f,%.4f,%.4f)\n" , res.x , res.y , res.z ,
-				lightState.indirContrib.x , lightState.indirContrib.y , lightState.indirContrib.z);
+			//fprintf(fp2 , "indir , contrib = (%.4f,%.4f,%.4f) , thr = (%.4f,%.4f,%.4f)\n" , res.x , res.y , res.z ,
+			//	lightState.indirContrib.x , lightState.indirContrib.y , lightState.indirContrib.z);
 			indirColors.push_back(res * 1e3);
 		}
 

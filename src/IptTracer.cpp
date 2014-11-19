@@ -390,6 +390,7 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 				}
 			}
 			//saveImagePFM("vars.pfm" , varImg);
+			cvReleaseImage(&varImg);
 		}
 		else
 		{
@@ -1051,6 +1052,7 @@ void IptTracer::mergePartialPaths(omp_lock_t& cmdLock)
 	while (f)
 	{
 		++totMergeIter;
+		if (totMergeIter > mergeIterations) break;
 #pragma omp parallel for
 		for (int i = lightPhotonNum; i < partialPhotonNum; i++)
 		{
@@ -1066,8 +1068,6 @@ void IptTracer::mergePartialPaths(omp_lock_t& cmdLock)
 			partialSubPathList[i].indirContrib = contribs[i - lightPhotonNum];
 			partialSubPathList[i].mergedPath = mergedPath[i - lightPhotonNum];
 		}
-
-		if (totMergeIter > mergeIterations) break;
 	}
 
 	printf("merge done... totMergeIter = %d... tracing eye paths...\n" , totMergeIter);
