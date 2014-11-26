@@ -45,7 +45,7 @@ vector<vec3f> PathTracer::renderPixels(const Camera& camera)
 			}
 
 			//if (clock() / 1000 >= lastTime)
-			if (s % 200 == 0)
+			if (s % outputIter == 0)
 			{
 				unsigned nowTime = (clock()) / 1000;
 				showCurrentResult(pixelColors , &nowTime , &s);

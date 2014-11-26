@@ -66,6 +66,7 @@ protected:
 	void mergePartialPaths(omp_lock_t& cmdLock);
 
 	Ray genIntermediateSamples(Scene& scene);
+	Ray genIntermediateSamplesByPhotons(vector<IptPathState>& partialSubPathList , Scene& scene , int *index);
 
 	void mergePartialPaths(vector<vec3f>& contribs , vector<double>& mergedPath , const IptPathState& interState);
 
@@ -105,6 +106,7 @@ public:
 		timeInterval = lastTime = 3600;
 		gatherRadius = 0.f;
 		pathRatio = 0.5f;
+		outputIter = 5;
 
 		pixelNum = renderer->camera.height * renderer->camera.width;
 		totPathNum = pixelNum;
@@ -222,7 +224,7 @@ struct GatherQuery
 			totContrib = lightState.indirContrib;
 
 		// !!! for experiment !!!
-		totContrib = lightState.indirContrib;
+		//totContrib = lightState.indirContrib;
 		//if (lightState.pathLen <= 1)
 		//	totContrib = vec3f(0.f);
 
