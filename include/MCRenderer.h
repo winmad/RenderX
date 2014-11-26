@@ -96,6 +96,8 @@ protected:
 	bool connectRays(Path& path, int connectIndex, bool merged = false);
 
 public:
+	bool isDebug;
+
 	void setMaxDepth(const int _maxDepth)
 	{
 		maxDepth = (unsigned)_maxDepth;

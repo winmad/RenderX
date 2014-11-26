@@ -9,6 +9,7 @@
 #include "macros.h"
 #include "SceneVPMObject.h"
 #include "TimeManager.h"
+#include "visualizeUtils.h"
 
 static FILE *fp2 = fopen("debug_ipt_gather_y.txt" , "w");
 static FILE *fp3 = fopen("debug_ipt_gather_var.txt" , "w");
@@ -51,6 +52,9 @@ protected:
 
 	vector<bool> volMask;
 
+	vector<double> vars;
+	vector<vec3f> varColors;
+
 	bool dfs(int depth , int cur);
 
 	void movePaths(omp_lock_t& cmdLock , vector<Path>& , vector<Path*>&);
@@ -62,6 +66,7 @@ protected:
 	void mergePartialPaths(omp_lock_t& cmdLock);
 
 	Ray genIntermediateSamples(Scene& scene);
+	Ray genIntermediateSamplesByPhotons(vector<IptPathState>& partialSubPathList , Scene& scene , int *index);
 
 	void mergePartialPaths(vector<vec3f>& contribs , vector<double>& mergedPath , const IptPathState& interState);
 
@@ -86,7 +91,6 @@ public:
 	bool useWeight , usePPM , useDirIllu , useRayMarching , checkCycle;
 	bool useUniformInterSampler , useUniformSur , useUniformVol , useUniformDir;
 	bool useConstantKernel;
-	bool isDebug;
 
 	int pixelNum , lightPathNum , cameraPathNum , interPathNum , partialPathNum;
 	int totPathNum;
@@ -97,11 +101,12 @@ public:
 	IptTracer(Renderer* renderer) : MCRenderer(renderer)
 	{ 
 		alpha = 2.f / 3.f;
-		spp = 1; 
+		spp = -1; 
 		mergeRatio = 1.f;
 		timeInterval = lastTime = 3600;
 		gatherRadius = 0.f;
 		pathRatio = 0.5f;
+		outputIter = 5;
 
 		pixelNum = renderer->camera.height * renderer->camera.width;
 		totPathNum = pixelNum;
@@ -114,7 +119,7 @@ public:
 		useUniformVol = true;
 		useUniformDir = false;
 
-		useConstantKernel = false;
+		useConstantKernel = true;
 
 		checkCycle = true;
 		checkCycleIters = 100;
@@ -218,7 +223,10 @@ struct GatherQuery
 		else
 			totContrib = lightState.indirContrib;
 
+		// !!! for experiment !!!
 		//totContrib = lightState.indirContrib;
+		//if (lightState.pathLen <= 1)
+		//	totContrib = vec3f(0.f);
 
 		vec3f tmp = totContrib * bsdfFactor * cameraState->throughput; 
 
@@ -288,14 +296,14 @@ struct GatherQuery
 
 		if (lightState.index < tracer->lightPhotonNum)
 		{
-			fprintf(fp2 , "dir , contrib = (%.4f,%.4f,%.4f) , thr = (%.4f,%.4f,%.4f)\n" , res.x , res.y , res.z ,
-				lightState.throughput.x , lightState.throughput.y , lightState.throughput.z);
+			//fprintf(fp2 , "dir , contrib = (%.4f,%.4f,%.4f) , thr = (%.4f,%.4f,%.4f)\n" , res.x , res.y , res.z ,
+			//	lightState.throughput.x , lightState.throughput.y , lightState.throughput.z);
 			dirColors.push_back(res * 1e3);
 		}
 		else
 		{
-			fprintf(fp2 , "indir , contrib = (%.4f,%.4f,%.4f) , thr = (%.4f,%.4f,%.4f)\n" , res.x , res.y , res.z ,
-				lightState.indirContrib.x , lightState.indirContrib.y , lightState.indirContrib.z);
+			//fprintf(fp2 , "indir , contrib = (%.4f,%.4f,%.4f) , thr = (%.4f,%.4f,%.4f)\n" , res.x , res.y , res.z ,
+			//	lightState.indirContrib.x , lightState.indirContrib.y , lightState.indirContrib.z);
 			indirColors.push_back(res * 1e3);
 		}
 
