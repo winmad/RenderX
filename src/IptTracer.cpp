@@ -709,7 +709,7 @@ Ray IptTracer::genIntermediateSamplesByPhotons(vector<IptPathState>& partialSubP
 		pathId = clamp(pathId , 0 , partialSubPathList.size() - 1);
 		lightState = partialSubPathList[pathId];
 	}
-	if (pathId == 0)
+		if (pathId == 0)
     {
         chooseProb = weights[pathId];
     }
@@ -741,17 +741,15 @@ Ray IptTracer::genIntermediateSamplesByPhotons(vector<IptPathState>& partialSubP
 
     // find ray origin by disturb
     UniformSphericalSampler uniformSphericalSampler;
-    dir = uniformSphericalSampler.genSample(lf);
-    if (ray.getContactNormal().dot(dir) < 0)
-    {
-        dir = -dir;
-    }
+    float theta = RandGenerator::genFloat() * 2.f * M_PI;
+	dir = lf.s * cos(theta) + lf.t * sin(theta);
     o += dir * mergeRadius;
     ray.origin = o;
     // calc inter sample origin prob
     InterSampleQuery q(o);
     tree.searchInRadius(0 , o , mergeRadius , q);
-    ray.originProb = chooseProb / (2.f / 3.f * M_PI * mergeRadius * mergeRadius * mergeRadius) * q.pdf;
+    ray.originProb = chooseProb / (M_PI * mergeRadius * mergeRadius) * q.pdf;
+	//printf("%.6f , %.6f\n" , ray.originProb , 1.f / totArea);
 
     ray.direction = uniformSphericalSampler.genSample(lf);
     if (ray.getContactNormal().dot(ray.direction) < 0)
@@ -1707,15 +1705,24 @@ void IptTracer::mergePartialPaths(vector<vec3f>& contribs , vector<double>& merg
 			if (lightState.index < tracer->lightPhotonNum)
 			{
 				//weightFactor = (wm * tracer->lightPathNum) / (wc + wm * tracer->lightPathNum);
-				weightFactor = tracer->mergeFactor(&volMergeScale , &interState->originRay->originProb , &interState->originRay->directionProb , &tracer->lightPathNum) /
-					(tracer->connectFactor(lastPdf) + tracer->mergeFactor(&volMergeScale , &interState->originRay->originProb , &interState->originRay->directionProb , &tracer->lightPathNum));
+				//weightFactor = tracer->mergeFactor(&volMergeScale , &interState->originRay->originProb , &interState->originRay->directionProb , &tracer->lightPathNum) /
+				//	(tracer->connectFactor(lastPdf) + tracer->mergeFactor(&volMergeScale , &interState->originRay->originProb , &interState->originRay->directionProb , &tracer->lightPathNum));
+				Real originProb = 1.f / tracer->totArea;
+				Real dirProb = 0.5f / M_PI;
+				weightFactor = tracer->mergeFactor(&volMergeScale , &originProb , &dirProb , &tracer->lightPathNum) /
+					(tracer->connectFactor(lastPdf) + tracer->mergeFactor(&volMergeScale , &originProb , &dirProb , &tracer->lightPathNum));
+
 				res = tmp * (tracer->lightMergeKernel / volMergeScale);
 			}
 			else
 			{
 				//weightFactor = (wm * tracer->partialPathNum) / (wc + wm * tracer->partialPathNum);
-				weightFactor = tracer->mergeFactor(&volMergeScale , &interState->originRay->originProb , &interState->originRay->directionProb , &tracer->partialPathNum) /
-					(tracer->connectFactor(lastPdf) + tracer->mergeFactor(&volMergeScale , &interState->originRay->originProb , &interState->originRay->directionProb , &tracer->partialPathNum));
+				//weightFactor = tracer->mergeFactor(&volMergeScale , &interState->originRay->originProb , &interState->originRay->directionProb , &tracer->partialPathNum) /
+				//	(tracer->connectFactor(lastPdf) + tracer->mergeFactor(&volMergeScale , &interState->originRay->originProb , &interState->originRay->directionProb , &tracer->partialPathNum));
+				Real originProb = 1.f / tracer->totArea;
+				Real dirProb = 0.5f / M_PI;
+				weightFactor = tracer->mergeFactor(&volMergeScale , &originProb , &dirProb , &tracer->partialPathNum) /
+					(tracer->connectFactor(lastPdf) + tracer->mergeFactor(&volMergeScale , &originProb , &dirProb , &tracer->partialPathNum));
 				res = tmp * (tracer->interMergeKernel / volMergeScale);
 			}
 			/*
