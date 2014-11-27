@@ -66,7 +66,8 @@ protected:
 	void mergePartialPaths(omp_lock_t& cmdLock);
 
 	Ray genIntermediateSamples(Scene& scene);
-	Ray genIntermediateSamplesByPhotons(vector<IptPathState>& partialSubPathList , Scene& scene , int *index);
+	Ray genIntermediateSamplesByPhotons(vector<IptPathState>& partialSubPathList ,
+        PointKDTree<IptPathState>& tree , Scene& scene , int *index);
 
 	void mergePartialPaths(vector<vec3f>& contribs , vector<double>& mergedPath , const IptPathState& interState);
 
@@ -156,6 +157,24 @@ public:
 	}
 };
 
+struct InterSampleQuery
+{
+    float pdf;
+    vec3f pos;
+
+    InterSampleQuery(const vec3f& p)
+    {
+        pos = p;
+        pdf = 0.f;
+    }
+
+    void process(IptPathState& lightState)
+    {
+        vec3f dir = pos - lightState.pos;
+        if (lightState.ray->getContactNormal().dot(dir) < 1e-6) return;
+        pdf += 1.f;
+    }
+};
 
 struct GatherQuery
 {

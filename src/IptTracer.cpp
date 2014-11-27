@@ -690,15 +690,18 @@ void IptTracer::genLightPaths(omp_lock_t& cmdLock , vector<Path*>& lightPathList
 	lightPhotonNum = partialPhotonNum = partialSubPathList.size();
 }
 
-Ray IptTracer::genIntermediateSamplesByPhotons(vector<IptPathState>& partialSubPathList , Scene& scene , int *index)
+Ray IptTracer::genIntermediateSamplesByPhotons(vector<IptPathState>& partialSubPathList ,
+    PointKDTree<IptPathState>& tree , Scene& scene , int *index)
 {
+    // handle surface scene only
 	for (;;) {
 	float randWeight = RandGenerator::genFloat();
 	int pathId = (lower_bound(weights.begin() , weights.end() , randWeight) - weights.begin()) - 1;
 	pathId = clamp(pathId , 0 , partialSubPathList.size() - 1);
 	IptPathState& lightState = partialSubPathList[pathId];
+    float chooseProb;
 	while (lightState.ray == NULL ||
-		(lightState.ray->insideObject && !lightState.ray->insideObject->canMerge) ||
+		// (lightState.ray->insideObject && !lightState.ray->insideObject->canMerge) ||
 		(!lightState.ray->insideObject && lightState.ray->contactObject && !lightState.ray->contactObject->canMerge))
 	{
 		randWeight = RandGenerator::genFloat();
@@ -706,17 +709,25 @@ Ray IptTracer::genIntermediateSamplesByPhotons(vector<IptPathState>& partialSubP
 		pathId = clamp(pathId , 0 , partialSubPathList.size() - 1);
 		lightState = partialSubPathList[pathId];
 	}
-	
-	if (*index && partPathMergeIndex[*index].size() > 0)
-		lightState = partialSubPathList[partPathMergeIndex[*index][0]];
+	if (pathId == 0)
+    {
+        chooseProb = weights[pathId];
+    }
+    else
+    {
+        chooseProb = weights[pathId] - weights[pathId - 1];
+    }
+	// if (*index && partPathMergeIndex[*index].size() > 0)
+		// lightState = partialSubPathList[partPathMergeIndex[*index][0]];
 
 	Ray ray;
-	ray.originSampleType = Ray::SampleType::RANDOM;
-	ray.directionSampleType = Ray::SampleType::RANDOM;
+	ray.originSampleType = Ray::RANDOM;
+	ray.directionSampleType = Ray::RANDOM;
 
-	ray.insideObject = lightState.ray->insideObject;
+	// ray.insideObject = lightState.ray->insideObject;
 	ray.contactObject = lightState.ray->contactObject;
 	ray.contactObjectTriangleID = lightState.ray->contactObjectTriangleID;
+    ray.origin = lightState.pos;
 
 	RandGenerator rng;
 	Ray inRay(*(lightState.lastRay)) , outRay(ray);
@@ -725,6 +736,34 @@ Ray IptTracer::genIntermediateSamplesByPhotons(vector<IptPathState>& partialSubP
 	vec3f dir(0.f);
 	Real originProb;
 
+    LocalFrame lf = ray.contactObject->getAutoGenWorldLocalFrame(
+        ray.contactObjectTriangleID , o);
+
+    // find ray origin by disturb
+    UniformSphericalSampler uniformSphericalSampler;
+    dir = uniformSphericalSampler.genSample(lf);
+    if (ray.getContactNormal().dot(dir) < 0)
+    {
+        dir = -dir;
+    }
+    o += dir * mergeRadius;
+    ray.origin = o;
+    // calc inter sample origin prob
+    InterSampleQuery q(o);
+    tree.searchInRadius(0 , o , mergeRadius , q);
+    ray.originProb = chooseProb / (2.f / 3.f * M_PI * mergeRadius * mergeRadius * mergeRadius) * q.pdf;
+
+    ray.direction = uniformSphericalSampler.genSample(lf);
+    if (ray.getContactNormal().dot(ray.direction) < 0)
+    {
+        ray.direction = -ray.direction;
+    }
+    ray.directionProb = uniformSphericalSampler.getProbDensity(lf , ray.direction) * 2.f;
+
+    ray.insideObject = scene.findInsideObject(ray , ray.contactObject);
+    ray.current_tid = scene.getContactTreeTid(ray);
+    ray.color = vec3f(1.f);
+    /*
 	if (lightState.ray->contactObject)
 	{
 		outRay = lightState.ray->contactObject->scatter(inRay , false);
@@ -741,41 +780,22 @@ Ray IptTracer::genIntermediateSamplesByPhotons(vector<IptPathState>& partialSubP
 			(4.f / 3.f * M_PI * mergeRadius * mergeRadius * mergeRadius);
 		//originProb = getOriginProb(countHashGrid , o , true);
 	}
-	
-	if (dir.length() < 1e-7f || originProb < 1e-7f)
-		continue;
+	*/
 
-	dir.normalize();
-	ray.origin = o + (dir * mergeRadius * rng.genFloat());
+    if (!scene.usingGPU())
+    {
+        Scene::ObjSourceInformation osi;
+        NoSelfIntersectionCondition condition(&scene , ray);
+        Real dist = scene.intersect(ray, osi, &condition);
 
-	ray.direction = dir;
-
-	ray.color = vec3f(1.0);
-
-	ray.originProb = originProb;
-	//ray.originProb = 1.f / totVol;
-	//ray.originProb = getOriginProb(countHashGrid , ray.origin , true); // only volume
-
-	ray.directionProb = outRay.directionProb;
-
-	vec3f bsdfFactor = inRay.getBSDF(outRay);
-	if (y(bsdfFactor) < 1e-5)
-		continue;
-
-	ray.origin = o;
-	ray.color = lightState.throughput * bsdfFactor;
-
-	ray.current_tid = scene.getContactTreeTid(ray);
-	Scene::ObjSourceInformation osi;
-	NoSelfIntersectionCondition condition(&scene , ray);
-	Real dist = scene.intersect(ray, osi, &condition);
-
-	if (dist > 0)
-	{
-		ray.intersectDist = dist;
-		ray.intersectObject = scene.objects[osi.objID];
-		ray.intersectObjectTriangleID = osi.triangleID;
-	}
+        if (dist > 0)
+        {
+            ray.intersectDist = dist;
+            ray.intersectObject = scene.objects[osi.objID];
+            ray.intersectObjectTriangleID = osi.triangleID;
+        }
+    }
+    /*
 	if (ray.intersectObject == NULL)
 		continue;
 
@@ -783,7 +803,9 @@ Ray IptTracer::genIntermediateSamplesByPhotons(vector<IptPathState>& partialSubP
 
 	if (insideObj != ray.insideObject)
 		continue;
-	/*
+    */
+
+    /*
 	fprintf(fp , "===============\n");
 	fprintf(fp , "lightState: pos=(%.3f,%.3f,%.3f), c=(%.6f,%.6f,%.6f), bsdf=(%.6f,%.6f,%.6f)\n" , lightState.pos[0] , lightState.pos[1] ,
 		lightState.pos[2] , lightState.dirContrib[0] , lightState.dirContrib[1] , lightState.dirContrib[2] , bsdfFactor[0] , bsdfFactor[1] , bsdfFactor[2]);
@@ -827,6 +849,7 @@ void IptTracer::genIntermediatePaths(omp_lock_t& cmdLock , vector<Path*>& interP
 {
 	// preprocess
 	vector<IptPathState> lightSubPathList(partialSubPathList);
+    PointKDTree<IptPathState> tree(lightSubPathList);
 	int N = lightSubPathList.size();
 	weights.resize(N + 1 , 0);
 	for (int i = 0; i < N; i++)
@@ -851,7 +874,7 @@ void IptTracer::genIntermediatePaths(omp_lock_t& cmdLock , vector<Path*>& interP
 		if (!renderer->scene.usingGPU())
 		{
 			//Ray interRay = genIntermediateSamples(renderer->scene);
-			Ray interRay = genIntermediateSamplesByPhotons(lightSubPathList , renderer->scene , &p);
+			Ray interRay = genIntermediateSamplesByPhotons(lightSubPathList , tree , renderer->scene , &p);
 			interPathList[p] = new Path;
 			samplePath(*interPathList[p] , interRay);
 		}
