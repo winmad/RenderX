@@ -148,7 +148,7 @@ MCRenderer::IntersectInfo MCRenderer::intersect(const vec3f& origin, const vec3f
 	return info;
 }
 
-void MCRenderer::samplePath(Path& path, Ray& prevRay, unsigned depth, bool firstDiff) const
+void MCRenderer::samplePath(Path& path, Ray& prevRay, unsigned depth, bool isLightPath, bool firstDiff) const
 {
 	if(prevRay.directionSampleType == Ray::RANDOM && firstDiff){
 		path.push_back(prevRay);
@@ -168,11 +168,11 @@ void MCRenderer::samplePath(Path& path, Ray& prevRay, unsigned depth, bool first
 
 	if(prevRay.insideObject)
 	{
-		nextRay = prevRay.insideObject->scatter(prevRay);
+		nextRay = prevRay.insideObject->scatter(prevRay , isLightPath , true);
 	}
 	else if(prevRay.intersectObject)
 	{
-		nextRay = prevRay.intersectObject->scatter(prevRay);
+		nextRay = prevRay.intersectObject->scatter(prevRay , isLightPath , true);
 	}
 	else
 	{
@@ -219,13 +219,13 @@ void MCRenderer::samplePath(Path& path, Ray& prevRay, unsigned depth, bool first
 	samplePath(path, nextRay, depth + 1, firstDiff);
 }
 
-void MCRenderer::samplePath(Path& path, Ray& startRay) const
+void MCRenderer::samplePath(Path& path, Ray& startRay, bool isLightPath) const
 {
 	path.clear();
-	samplePath(path, startRay, 0);
+	samplePath(path, startRay, 0, isLightPath);
 }
 
-vector<Path> MCRenderer::samplePathList(const vector<Ray>& startRayList) const
+vector<Path> MCRenderer::samplePathList(const vector<Ray>& startRayList, bool isLightPath) const
 {
 	Ray termRay;
 	termRay.origin = vec3f(0, 0, 0);
@@ -274,11 +274,11 @@ vector<Path> MCRenderer::samplePathList(const vector<Ray>& startRayList) const
 		{
 			if(rays[i].insideObject && rays[i].intersectObject)
 			{
-				candidateRays[i] = rays[i].insideObject->scatter(rays[i]);
+				candidateRays[i] = rays[i].insideObject->scatter(rays[i] , isLightPath , true);
 			}
 			else if(rays[i].intersectObject)
 			{
-				candidateRays[i] = rays[i].intersectObject->scatter(rays[i]);
+				candidateRays[i] = rays[i].intersectObject->scatter(rays[i] , isLightPath , true);
 			}
 			else
 			{
@@ -301,7 +301,7 @@ vector<Path> MCRenderer::samplePathList(const vector<Ray>& startRayList) const
 	return pathList;
 }
 
-vector<Path> MCRenderer::sampleMergePathList(const vector<Ray>& startRayList) const
+vector<Path> MCRenderer::sampleMergePathList(const vector<Ray>& startRayList, bool isLightPath) const
 {
 	Ray termRay;
 	termRay.origin = vec3f(0, 0, 0);
@@ -359,7 +359,7 @@ vector<Path> MCRenderer::sampleMergePathList(const vector<Ray>& startRayList) co
 
 			if(rays[i].insideObject && !rays[i].insideObject->isVolumetric())
 			{
-				candidateRays[i] = rays[i].insideObject->scatter(rays[i]);
+				candidateRays[i] = rays[i].insideObject->scatter(rays[i] , isLightPath , true);
 			}
 			else if(rays[i].intersectObject)
 			{
@@ -370,7 +370,7 @@ vector<Path> MCRenderer::sampleMergePathList(const vector<Ray>& startRayList) co
 					rays[i].intersectDist = 0;
 
 				}
-				candidateRays[i] = rays[i].intersectObject->scatter(rays[i]);
+				candidateRays[i] = rays[i].intersectObject->scatter(rays[i] , isLightPath , true);
 			}
 			else
 			{

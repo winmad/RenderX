@@ -91,7 +91,7 @@ public:
 	void writeMitsubaDensityMap(const std::string& filename);
 	void writeMitsubaAlbedo(const std::string& filename);
 
-	Ray scatter(const Ray& inRay, const bool russian = true) const;
+	Ray scatter(const Ray& inRay, const bool fixIsLight, const bool russian) const;
 	vec3f getBSDF(const Ray &inRay, const Ray &outRay) const;
 	float getOriginSampleProbDensity(const Ray &inRay, const Ray &outRay) const;
 	float getDirectionSampleProbDensity(const Ray &inRay, const Ray &outRay) const;

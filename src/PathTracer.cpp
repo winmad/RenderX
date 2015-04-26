@@ -19,7 +19,7 @@ vector<vec3f> PathTracer::renderPixels(const Camera& camera)
 			{
 				Path eyePath;
                 Ray cameraRay = camera.generateRay(p);
-				samplePath(eyePath, cameraRay);
+				samplePath(eyePath, cameraRay, false);
 
 				pixelColors[p] *= s/float(s+1);
 
@@ -72,7 +72,7 @@ vector<vec3f> PathTracer::renderPixels(const Camera& camera)
 			}
 
 			int clk = clock();
-			vector<Path> pathList = samplePathList(eyeRays);
+			vector<Path> pathList = samplePathList(eyeRays, true);
 
 			vector<Path> lightPathList;
 			vector<vector<unsigned> > visList;

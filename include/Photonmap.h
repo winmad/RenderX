@@ -47,7 +47,7 @@ public:
 	void throughputByDensityEstimation(vec3f &color, Path &eyeMergePath, 
 		std::vector<LightPoint> &surfaceVertices, std::vector<LightPoint> &volumeVertices);
 
-	void sampleMergePath(Path &path, Ray &prevRay, uint depth) const;
+	void sampleMergePath(Path &path, Ray &prevRay, uint depth, bool isLightPath) const;
 
 	virtual vector<vec3f> renderPixels(const Camera& camera);
 

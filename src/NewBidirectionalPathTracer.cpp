@@ -44,7 +44,7 @@ vector<vec3f> NewBidirectionalPathTracer::renderPixels(const Camera& camera)
 
 				Ray lightRay = genEmissiveSurfaceSample(true , false);
 
-				samplePath(lightPath, lightRay);
+				samplePath(lightPath, lightRay , true);
 
 				BidirPathState lightState;
 				int s = 1;
@@ -131,7 +131,7 @@ vector<vec3f> NewBidirectionalPathTracer::renderPixels(const Camera& camera)
 
 				Ray cameraRay = camera.generateRay(p);
 
-				samplePath(cameraPath, cameraRay);
+				samplePath(cameraPath, cameraRay, false);
 
 				BidirPathState cameraState;
 				vec3f color(0.f);

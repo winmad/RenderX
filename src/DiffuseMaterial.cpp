@@ -1,7 +1,8 @@
 #include "StdAfx.h"
 #include "DiffuseMaterial.h"
 
-Ray DiffuseMaterial::scatter(const SceneObject* object, const Ray& inRay, const bool russian) const
+Ray DiffuseMaterial::scatter(const SceneObject* object, const Ray& inRay, 
+	const bool fixIsLight, const bool russian) const
 {
 	Ray outRay;
 	outRay.origin = inRay.origin + inRay.direction*inRay.intersectDist;

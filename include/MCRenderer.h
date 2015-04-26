@@ -35,7 +35,7 @@ protected:
 
 	Renderer *renderer;
 
-	void samplePath(Path& path, Ray& prevRay, unsigned depth, bool firstDiff = false) const;
+	void samplePath(Path& path, Ray& prevRay, unsigned depth, bool isLightPath, bool firstDiff = false) const;
 
 	string savePath;
 
@@ -59,11 +59,11 @@ protected:
     
 	vector<Ray> showPath;
 
-	void samplePath(Path& path, Ray& startRay) const;
+	void samplePath(Path& path, Ray& startRay, bool isLightPath) const;
 
-	vector<Path> samplePathList(const vector<Ray>& startRayList) const;
+	vector<Path> samplePathList(const vector<Ray>& startRayList, bool isLightPath) const;
 
-	vector<Path> sampleMergePathList(const vector<Ray>& startRayList) const;
+	vector<Path> sampleMergePathList(const vector<Ray>& startRayList, bool isLightPath) const;
 
 	void showCurrentResult(const vector<vec3f>& pixelColors , unsigned* time = NULL , unsigned* iter = NULL);
 

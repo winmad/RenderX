@@ -1,7 +1,8 @@
 #include "StdAfx.h"
 #include "RefractiveMaterial.h"
 
-Ray RefractiveMaterial::scatter(const SceneObject* object, const Ray& inRay, const bool russian) const
+Ray RefractiveMaterial::scatter(const SceneObject* object, const Ray& inRay, 
+	const bool fixIsLight, const bool russian) const
 {
 	Ray outRay;
 	vec3f position = inRay.origin + inRay.direction*inRay.intersectDist;
@@ -41,7 +42,7 @@ Ray RefractiveMaterial::scatter(const SceneObject* object, const Ray& inRay, con
 
 	if(inRay.intersectObject != object && inRay.insideObject == object)
 	{
-		outRay = inRay.intersectObject->scatter(inRay);
+		outRay = inRay.intersectObject->scatter(inRay , fixIsLight , russian);
 		return outRay;
 	}
 

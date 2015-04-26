@@ -13,7 +13,7 @@ public:
 	float g;
 	float stepSize;
 	float IOR;
-	Ray scatter(const Ray& inRay, const bool russian = true) const;
+	Ray scatter(const Ray& inRay, const bool fixIsLight, const bool russian) const;
 	bool isVolumetric() { return true; }
 	bool hasCosineTerm() { return false; }
 	bool isHomogeneous() { return true; }

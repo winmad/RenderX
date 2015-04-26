@@ -552,7 +552,7 @@ vec3f HeterogeneousVolume::getRadianceDecay(const Ray &inRay, const float &dist)
 	return Tr;
 }
 
-Ray HeterogeneousVolume::scatter(const Ray &inRay, const bool russian ) const{
+Ray HeterogeneousVolume::scatter(const Ray &inRay, const bool fixIsLight, const bool russian ) const{
 	Ray outRay;
 	//outRay.isDeltaDirection = false;
 	outRay.directionSampleType = Ray::RANDOM;
@@ -767,7 +767,7 @@ Ray HeterogeneousVolume::scatter(const Ray &inRay, const bool russian ) const{
 		else{
 			outRay.contactObject = NULL;
 			outRay.intersectDist = 0;
-			outRay = inRay.intersectObject->scatter(outRay);
+			outRay = inRay.intersectObject->scatter(outRay , fixIsLight , russian);
 			outRay.originProb *= P_surface;
 			outRay.photonType = inRay.intersectObject->isVolumetric() ? Ray::NOUSE : Ray::OUTVOL;
 		}

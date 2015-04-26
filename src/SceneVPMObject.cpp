@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "SceneVPMObject.h"
 
-Ray SceneVPMObject::scatter(const Ray& inRay, const bool russian) const
+Ray SceneVPMObject::scatter(const Ray& inRay, const bool fixIsLight, const bool russian) const
 {
 	Ray outRay;
 	outRay.directionSampleType = Ray::RANDOM;
@@ -219,7 +219,7 @@ Ray SceneVPMObject::scatter(const Ray& inRay, const bool russian) const
 			
 			//------ FIX ME -------
 			if (inRay.intersectObject != NULL)
-				outRay = inRay.intersectObject->scatter(outRay , russian);
+				outRay = inRay.intersectObject->scatter(outRay , fixIsLight , russian);
 			else
 				printf("error VPM object scattering\n");
 			//---------------------

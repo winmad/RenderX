@@ -55,7 +55,7 @@ vector<vec3f> PhotonMap::renderPixels(const Camera& camera){
 			Ray lightRay = genEmissiveSurfaceSample(true , false);
 			pixelLightPaths[p] = new Path;
 			Path &lightPath = *pixelLightPaths[p];
-			samplePath(lightPath, lightRay);
+			samplePath(lightPath, lightRay, true);
 			for(int i = 1; i < lightPath.size(); i++){
 				// light is not reflective
 				if(lightPath[i].contactObject && lightPath[i].contactObject->emissive())
@@ -93,9 +93,9 @@ vector<vec3f> PhotonMap::renderPixels(const Camera& camera){
 			Path eyePath;
             Ray cameraRay = camera.generateRay(p);
 			if (rayMarching)
-				sampleMergePath(eyePath, cameraRay, 0);
+				sampleMergePath(eyePath, cameraRay, 0, false);
 			else
-				samplePath(eyePath, cameraRay);
+				samplePath(eyePath, cameraRay, false);
 
 			//fprintf(fp , "===================\n");
 			//for (int i = 0; i < eyePath.size(); i++)
@@ -137,7 +137,7 @@ vector<vec3f> PhotonMap::renderPixels(const Camera& camera){
 	return pixelColors;
 }
 
-void PhotonMap::sampleMergePath(Path &path, Ray &prevRay, uint depth) const{
+void PhotonMap::sampleMergePath(Path &path, Ray &prevRay, uint depth, bool isLightPath) const{
 	path.push_back(prevRay);
 
 	Ray terminateRay;
@@ -151,13 +151,13 @@ void PhotonMap::sampleMergePath(Path &path, Ray &prevRay, uint depth) const{
 
 	Ray nextRay;
 	if(prevRay.insideObject && !prevRay.insideObject->isVolumetric())			
-		nextRay = prevRay.insideObject->scatter(prevRay);
+		nextRay = prevRay.insideObject->scatter(prevRay , isLightPath , true);
 	else if(prevRay.intersectObject){
 		if(prevRay.intersectObject->isVolumetric() && prevRay.contactObject && prevRay.contactObject->isVolumetric()){
 			prevRay.origin += prevRay.direction * prevRay.intersectDist;
 			prevRay.intersectDist = 0;
 		}
-		nextRay = prevRay.intersectObject->scatter(prevRay);
+		nextRay = prevRay.intersectObject->scatter(prevRay , isLightPath , true);
 	}
 	else{
 		path.push_back(terminateRay);	return ;
@@ -182,7 +182,7 @@ void PhotonMap::sampleMergePath(Path &path, Ray &prevRay, uint depth) const{
 		nextRay.intersectObjectTriangleID = info.triangleID;
 		nextRay.intersectDist = dist;
 	}
-	sampleMergePath(path, nextRay, depth + 1);
+	sampleMergePath(path, nextRay, depth + 1, false);
 }
 
 void PhotonMap::throughputByDensityEstimation(vec3f &color, Path &eyeMergePath, 

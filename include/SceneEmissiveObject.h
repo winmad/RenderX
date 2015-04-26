@@ -5,7 +5,7 @@ class SceneEmissiveObject : public SceneObject
 {
 protected:
 	vec3f color;
-	Ray scatter(const Ray& inRay , const bool russian = true) const;
+	Ray scatter(const Ray& inRay , const bool fixIsLight , const bool russian) const;
 public:
 	vec3f getColor() const { return color; }
 	void setColor(const vec3f& color){ this->color = color; }

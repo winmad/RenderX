@@ -403,7 +403,7 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 #pragma omp parallel for
 			for (int p = 0; p < lightPathNum; p++)
 				lightRayList[p] = genEmissiveSurfaceSample(true , false);
-			lightPathListGPU = samplePathList(lightRayList);
+			lightPathListGPU = samplePathList(lightRayList, true);
 			movePaths(cmdLock , lightPathListGPU , lightPathList);
 
 			genLightPaths(cmdLock , lightPathList , (s == 0));
@@ -413,7 +413,7 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 #pragma omp parallel for
 				for (int p = 0; p < interPathNum; p++)
 					interRayList[p] = genIntermediateSamples(renderer->scene);
-				interPathListGPU = samplePathList(interRayList);
+				interPathListGPU = samplePathList(interRayList, true);
 				movePaths(cmdLock , interPathListGPU , interPathList);
 
 				genIntermediatePaths(cmdLock , interPathList);
@@ -428,7 +428,7 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 #pragma omp parallel for
 			for (int p = 0; p < cameraPathNum; p++)
 				eyeRayList[p] = camera.generateRay(p);
-			eyePathListGPU = sampleMergePathList(eyeRayList);
+			eyePathListGPU = sampleMergePathList(eyeRayList, false);
 
 #pragma omp parallel for
 			for(int p=0; p<cameraPathNum; p++)
@@ -552,7 +552,7 @@ void IptTracer::genLightPaths(omp_lock_t& cmdLock , vector<Path*>& lightPathList
 		{
 			Ray lightRay = genEmissiveSurfaceSample(true , false);
 			lightPathList[p] = new Path;
-			samplePath(*lightPathList[p] , lightRay);
+			samplePath(*lightPathList[p] , lightRay , true);
 		}
 		
 		Path& lightPath = *lightPathList[p];
@@ -876,7 +876,7 @@ void IptTracer::genIntermediatePaths(omp_lock_t& cmdLock , vector<Path*>& interP
 			//Ray interRay = genIntermediateSamples(renderer->scene);
 			Ray interRay = genIntermediateSamplesByPhotons(lightSubPathList , tree , renderer->scene , &p);
 			interPathList[p] = new Path;
-			samplePath(*interPathList[p] , interRay);
+			samplePath(*interPathList[p] , interRay , true);
 		}
 
 		Path& interPath = *interPathList[p];
@@ -1804,7 +1804,7 @@ void IptTracer::sampleMergePath(Path &path, Ray &prevRay, uint depth)
 	Ray nextRay;
 	if (prevRay.insideObject && !prevRay.insideObject->isVolumetric())
 	{
-		nextRay = prevRay.insideObject->scatter(prevRay);
+		nextRay = prevRay.insideObject->scatter(prevRay , false , true);
 	}
 	else 
 	{
@@ -1816,7 +1816,7 @@ void IptTracer::sampleMergePath(Path &path, Ray &prevRay, uint depth)
 				prevRay.origin += prevRay.direction * prevRay.intersectDist;
 				prevRay.intersectDist = 0;
 			}
-			nextRay = prevRay.intersectObject->scatter(prevRay);
+			nextRay = prevRay.intersectObject->scatter(prevRay , false , true);
 		}
 		else
 		{

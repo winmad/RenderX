@@ -42,9 +42,9 @@ vector<vec3f> BidirectionalPathTracer::renderPixels(const Camera& camera)
 				Ray lightRay = genEmissiveSurfaceSample(true , false);
 
                 Ray cameraRay = camera.generateRay(p);
-				samplePath(eyePath, cameraRay);
+				samplePath(eyePath, cameraRay, false);
 
-				samplePath(lightPath, lightRay);
+				samplePath(lightPath, lightRay, true);
 
 				if(p == pathPixelID)
 					showPath = lightPath;
@@ -64,8 +64,8 @@ vector<vec3f> BidirectionalPathTracer::renderPixels(const Camera& camera)
 				lightRayList[p] = genEmissiveSurfaceSample(true , false);
 			}
 
-			eyePathList = samplePathList(eyeRayList);
-			lightPathList = samplePathList(lightRayList);
+			eyePathList = samplePathList(eyeRayList, false);
+			lightPathList = samplePathList(lightRayList, true);
 
 			vector<vector<unsigned> > visibilityList = testPathListVisibility(eyePathList, lightPathList);
 
