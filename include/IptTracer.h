@@ -171,7 +171,7 @@ struct InterSampleQuery
     void process(IptPathState& lightState)
     {
         vec3f dir = pos - lightState.pos;
-        if (lightState.ray->getContactNormal().dot(dir) < 1e-6) return;
+        if (std::abs(lightState.ray->getContactNormal().dot(dir)) > 1e-6) return;
         pdf += 1.f;
     }
 };
