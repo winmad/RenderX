@@ -94,6 +94,7 @@ Ray RefractiveMaterial::scatter(const SceneObject* object, const Ray& inRay,
 		}
 		else
 		{
+			if (!fixIsLight) outRay.color *= (current_n * current_n / next_n * next_n);
 			outRay.color *= (1-er) / outRay.getCosineTerm();
 			outRay.photonProb = outRay.directionProb = 1-p;
 			outRay.insideObject = outSideObject;

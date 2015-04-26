@@ -393,63 +393,6 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 			cvReleaseImage(&varImg);
 			*/
 		}
-		else
-		{
-			vector<Path> lightPathListGPU , interPathListGPU , eyePathListGPU;
-			vector<Ray> eyeRayList(cameraPathNum);
-			vector<Ray> lightRayList(lightPathNum);
-			vector<Ray> interRayList(interPathNum);
-
-#pragma omp parallel for
-			for (int p = 0; p < lightPathNum; p++)
-				lightRayList[p] = genEmissiveSurfaceSample(true , false);
-			lightPathListGPU = samplePathList(lightRayList, true);
-			movePaths(cmdLock , lightPathListGPU , lightPathList);
-
-			genLightPaths(cmdLock , lightPathList , (s == 0));
-
-			if (!usePPM)
-			{
-#pragma omp parallel for
-				for (int p = 0; p < interPathNum; p++)
-					interRayList[p] = genIntermediateSamples(renderer->scene);
-				interPathListGPU = samplePathList(interRayList, true);
-				movePaths(cmdLock , interPathListGPU , interPathList);
-
-				genIntermediatePaths(cmdLock , interPathList);
-			}
-			
-			printf("lightPhotonNum = %d, partialPhotonNum = %d\n" , lightPhotonNum , partialPhotonNum);
-
-			mergePartialPaths(cmdLock);
-
-			PointKDTree<IptPathState> partialSubPaths(partialSubPathList);
-
-#pragma omp parallel for
-			for (int p = 0; p < cameraPathNum; p++)
-				eyeRayList[p] = camera.generateRay(p);
-			eyePathListGPU = sampleMergePathList(eyeRayList, false);
-
-#pragma omp parallel for
-			for(int p=0; p<cameraPathNum; p++)
-			{
-				Path eyePath;
-				eyePath = eyePathListGPU[p];
-				/*
-				fprintf(fp , "==================\n");
-				for (int i = 0; i < eyePath.size(); i++)
-
-				{
-					fprintf(fp , "c = (%.8f,%.8f,%.8f), dir = (%.8f,%.8f,%.8f), cos = %.8f, dirPdf = %.8f, oriPdf = %.8f\n" ,
-						eyePath[i].color.x , eyePath[i].color.y , eyePath[i].color.z ,
-						eyePath[i].direction.x , eyePath[i].direction.y , eyePath[i].direction.z ,
-						eyePath[i].getCosineTerm() , eyePath[i].directionProb , eyePath[i].originProb);
-				}
-				*/
-				//sampleMergePath(eyePath , camera.generateRay(p , true) , 0);
-				singleImageColors[p] += colorByRayMarching(eyePath , partialSubPaths , p);
-			}
-		}
 
 		printf("done calculation, release memory\n");
 
