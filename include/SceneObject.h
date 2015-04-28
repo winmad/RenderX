@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 #include "Ray.h"
 #include "simpleshape.h"
 #include "Scene.h"
@@ -80,6 +81,8 @@ public:
 	virtual float evaluatePdfW(const Ray &inRay, const Ray &outRay) const { return 1; }
 	virtual vec3f getBSDF(const Ray& inRay, const Ray& outRay) const;
 	virtual vec3f getRadianceDecay(const Ray& inRay, const float& dist) const;
+
+	virtual std::string getType() { return "X"; }
 
 	virtual ~SceneObject();
 };

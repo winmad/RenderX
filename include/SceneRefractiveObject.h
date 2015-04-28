@@ -20,6 +20,8 @@ public:
 	}
 	void setRefrCoeff(const float& coeff) { material->setRefrCoeff(coeff); }
 	float getRefrCoeff() const{ return material->getRefrCoeff(); }
+	
+	virtual std::string getType() { return "T"; }
 };
 
 

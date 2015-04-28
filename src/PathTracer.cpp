@@ -1,6 +1,8 @@
 #include "StdAfx.h"
 #include "PathTracer.h"
 
+static FILE* fp = fopen("debug_pt.txt" , "w");
+
 vector<vec3f> PathTracer::renderPixels(const Camera& camera)
 {
 	int t_start = clock();
@@ -19,7 +21,17 @@ vector<vec3f> PathTracer::renderPixels(const Camera& camera)
 			{
 				Path eyePath;
                 Ray cameraRay = camera.generateRay(p);
+				//printf("=============\n");
+				//fprintf(fp , "============\n");
 				samplePath(eyePath, cameraRay, false);
+
+				for (int i = 0; i < eyePath.size(); i++)
+				{
+					if (eyePath[i].contactObject == NULL) break;
+// 					fprintf(fp , "%s, bsdf = (%.6f,%.6f,%.6f)\n" , 
+// 						eyePath[i].contactObject->getType().c_str() , 
+// 						eyePath[i].color.x , eyePath[i].color.y , eyePath[i].color.z);
+				}
 
 				pixelColors[p] *= s/float(s+1);
 

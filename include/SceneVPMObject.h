@@ -17,6 +17,7 @@ public:
 	bool isVolumetric() { return true; }
 	bool hasCosineTerm() { return false; }
 	bool isHomogeneous() { return true; }
+	virtual std::string getType() { return "V"; }
  protected:
 	float y(vec3f c) const {
         const float YWeight[3] = { 0.212671f, 0.715160f, 0.072169f };

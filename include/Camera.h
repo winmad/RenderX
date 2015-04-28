@@ -27,5 +27,7 @@ public:
 	virtual float getDirectionSampleProbDensity(const Ray& inRay, const Ray& outRay) const;
 	virtual vec3f getBSDF(const Ray& inRay, const Ray& outRay) const { return vec3f(1, 1, 1); }
 	vec3f getWorldNormal(unsigned fi, const vec3f& position, bool flat = false) const;
+
+	virtual std::string getType() { return "E"; }
 };
 

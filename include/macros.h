@@ -1,4 +1,5 @@
 #include "nvVector.h"
+#include <cassert>
 
 using namespace nv;
 

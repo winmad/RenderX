@@ -100,6 +100,7 @@ public:
 	bool isVolumetric() { return true; }
 	bool hasCosineTerm() { return false; }
 	bool isHomogeneous() { return false; }
+	virtual std::string getType() { return "V"; }
 private:
 	float integrateDensity(const Ray& inRay, float dist) const;
 	vec3f tau(const Ray &inRay, float dist, bool noCheck = false) const;

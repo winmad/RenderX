@@ -35,7 +35,7 @@ protected:
 
 	Renderer *renderer;
 
-	void samplePath(Path& path, Ray& prevRay, unsigned depth, bool isLightPath, bool firstDiff = false) const;
+	void samplePathIter(Path& path, Ray& prevRay, unsigned depth, bool isLightPath, bool firstDiff) const;
 
 	string savePath;
 

@@ -37,13 +37,19 @@ Ray SceneVPMObject::scatter(const Ray& inRay, const bool fixIsLight, const bool 
 		outRay.contactObject = (SceneObject*)this;
 		outRay.contactObjectTriangleID = inRay.intersectObjectTriangleID;
 
-		if(sin_phi >= 1){
-			outRay.direction = reflDir;
-			outRay.insideObject = inRay.insideObject;
-			outRay.directionProb = 1;
+		if(sin_phi >= 1){ // no total internal reflection
+			outRay.direction = vec3f(0.f);
+			outRay.contactObject = NULL;
+			outRay.contactObjectTriangleID = -1;
 			outRay.directionSampleType = Ray::DEFINITE;
-			outRay.photonType = Ray::NOUSE;
-			outRay.color /= outRay.getCosineTerm();
+			return outRay;
+
+// 			outRay.direction = reflDir;
+// 			outRay.insideObject = inRay.insideObject;
+// 			outRay.directionProb = 1;
+// 			outRay.directionSampleType = Ray::DEFINITE;
+// 			outRay.photonType = Ray::NOUSE;
+// 			outRay.color /= outRay.getCosineTerm();
 
 			//if (abs(outRay.getCosineTerm() - 1.f) > 1e-6f)
 			//	printf("exception1: %.6f\n" , outRay.getCosineTerm());
@@ -75,6 +81,7 @@ Ray SceneVPMObject::scatter(const Ray& inRay, const bool fixIsLight, const bool 
 			}
 			else
 			{
+				if (!fixIsLight) outRay.color *= (current_n * current_n) / (next_n * next_n);
 				outRay.color *= (1-er) / outRay.getCosineTerm();
 				outRay.directionProb = 1-p;
 				outRay.contactObject = outRay.insideObject = (SceneObject*)this;
@@ -162,14 +169,20 @@ Ray SceneVPMObject::scatter(const Ray& inRay, const bool fixIsLight, const bool 
 			float sin_phi = current_n / next_n * sin(theta);
 
 			outRay.intersectObject = NULL;
-			if(sin_phi >= 1){
-				outRay.direction = reflDir;
-				outRay.insideObject = inRay.insideObject;
-				outRay.contactObject = (SceneObject*)this;
-				outRay.originProb = P_surface(inRay.intersectDist);
-				outRay.photonType = Ray::NOUSE;
+			if(sin_phi >= 1){ // no total internal reflection
+				outRay.direction = vec3f(0.f);
+				outRay.contactObject = NULL;
+				outRay.contactObjectTriangleID = -1;
 				outRay.directionSampleType = Ray::DEFINITE;
-				outRay.color /= outRay.getCosineTerm();
+				return outRay;
+
+// 				outRay.direction = reflDir;
+// 				outRay.insideObject = inRay.insideObject;
+// 				outRay.contactObject = (SceneObject*)this;
+// 				outRay.originProb = P_surface(inRay.intersectDist);
+// 				outRay.photonType = Ray::NOUSE;
+// 				outRay.directionSampleType = Ray::DEFINITE;
+// 				outRay.color /= outRay.getCosineTerm();
 
 				//if (abs(outRay.getCosineTerm() - 1.f) > 1e-6f)
 				//	printf("exception2: %.6f\n" , outRay.getCosineTerm());
@@ -202,6 +215,7 @@ Ray SceneVPMObject::scatter(const Ray& inRay, const bool fixIsLight, const bool 
 				}
 				else
 				{
+					if (!fixIsLight) outRay.color *= (current_n * current_n) / (next_n * next_n);
 					outRay.color *= (1-er) / outRay.getCosineTerm();
 					outRay.directionProb = (1-p);
 					outRay.originProb = P_surface(inRay.intersectDist);

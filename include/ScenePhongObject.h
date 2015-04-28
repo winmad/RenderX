@@ -20,4 +20,6 @@ public:
 		materialList.push_back(diffuseMaterial);
 		canMerge = true;
 	}
+
+	virtual std::string getType() { return "D"; }
 };

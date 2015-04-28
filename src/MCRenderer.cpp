@@ -148,7 +148,7 @@ MCRenderer::IntersectInfo MCRenderer::intersect(const vec3f& origin, const vec3f
 	return info;
 }
 
-void MCRenderer::samplePath(Path& path, Ray& prevRay, unsigned depth, bool isLightPath, bool firstDiff) const
+void MCRenderer::samplePathIter(Path& path, Ray& prevRay, unsigned depth, bool isLightPath, bool firstDiff) const
 {
 	if(prevRay.directionSampleType == Ray::RANDOM && firstDiff){
 		path.push_back(prevRay);
@@ -179,7 +179,18 @@ void MCRenderer::samplePath(Path& path, Ray& prevRay, unsigned depth, bool isLig
 		path.push_back(termRay);
 		return;
 	}
-
+	
+// 	if (!isLightPath)
+// 	{
+// 		std::string str;
+// 
+// 		if (nextRay.contactObject != NULL) str = nextRay.contactObject->getType();
+// 		else str = "X";
+// 
+// 		if (str != "T") printf("%s, pos = (%.6f,%.6f,%.6f)\n" , str.c_str() ,
+// 			nextRay.origin.x , nextRay.origin.y , nextRay.origin.z);
+// 	}
+	
 	if(nextRay.direction.length() < 0.5)
 	{
 		path.push_back(nextRay);
@@ -216,13 +227,13 @@ void MCRenderer::samplePath(Path& path, Ray& prevRay, unsigned depth, bool isLig
 	//	printf("sample path error, %d , %d\n" , (int)nextRay.contactObjectTriangleID , (int)nextRay.contactObject->faceVertexIndexList.size());
 	//}
 	
-	samplePath(path, nextRay, depth + 1, firstDiff);
+	samplePathIter(path, nextRay, depth + 1, isLightPath , firstDiff);
 }
 
 void MCRenderer::samplePath(Path& path, Ray& startRay, bool isLightPath) const
 {
 	path.clear();
-	samplePath(path, startRay, 0, isLightPath);
+	samplePathIter(path, startRay, 0, isLightPath , false);
 }
 
 vector<Path> MCRenderer::samplePathList(const vector<Ray>& startRayList, bool isLightPath) const

@@ -42,6 +42,7 @@ vector<vec3f> BidirectionalPathTracer::renderPixels(const Camera& camera)
 				Ray lightRay = genEmissiveSurfaceSample(true , false);
 
                 Ray cameraRay = camera.generateRay(p);
+				
 				samplePath(eyePath, cameraRay, false);
 
 				samplePath(lightPath, lightRay, true);

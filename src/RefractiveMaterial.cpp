@@ -7,6 +7,9 @@ Ray RefractiveMaterial::scatter(const SceneObject* object, const Ray& inRay,
 	Ray outRay;
 	vec3f position = inRay.origin + inRay.direction*inRay.intersectDist;
 
+	bool go_in = (inRay.intersectObject == object) && (inRay.insideObject != object);
+	bool go_out = (inRay.insideObject == object);
+
 	//==== FIX ME =====
 	if (inRay.intersectObject == NULL)
 	{
@@ -37,6 +40,10 @@ Ray RefractiveMaterial::scatter(const SceneObject* object, const Ray& inRay,
 		outRay.insideObject = inRay.insideObject;
 		outRay.directionProb = 1;
 		outRay.color /= outRay.getCosineTerm();
+		
+// 		if (!fixIsLight) printf("S, pos = (%.6f,%.6f,%.6f)\n" , outRay.origin.x ,
+// 			outRay.origin.y , outRay.origin.z);
+		
 		return outRay;
 	}
 
@@ -54,18 +61,27 @@ Ray RefractiveMaterial::scatter(const SceneObject* object, const Ray& inRay,
 		outSideObject = object->findInsideObject(outRay);
 	float current_n = currentInsideObject ? currentInsideObject->getRefrCoeff() : 1;
 	float next_n = outSideObject ? outSideObject->getRefrCoeff() : 1;
-
 	outRay.intersectObject = NULL;
 	outRay.directionProb = 1;
 
 	float sin_phi = current_n / next_n * sin(theta);
 
-	if(sin_phi >= 1)
+	if(sin_phi >= 1) // no total internal reflection
 	{
+		outRay.direction = vec3f(0.f);
+		outRay.contactObject = NULL;
+		outRay.contactObjectTriangleID = -1;
+		outRay.directionSampleType = Ray::DEFINITE;
+		return outRay;
+		/*
 		outRay.direction = reflDir;
 		outRay.insideObject = inRay.insideObject;
 		outRay.directionProb = 1;
 		outRay.color /= outRay.getCosineTerm();
+
+		if (!fixIsLight) printf("S, pos = (%.6f,%.6f,%.6f)\n" , outRay.origin.x ,
+			outRay.origin.y , outRay.origin.z);
+		*/
 	}
 	else
 	{
@@ -91,13 +107,28 @@ Ray RefractiveMaterial::scatter(const SceneObject* object, const Ray& inRay,
 			outRay.color *= er / outRay.getCosineTerm();
 			outRay.photonProb = outRay.directionProb = p;
 			outRay.insideObject = inRay.insideObject;
+
+// 			if (!fixIsLight) printf("S, pos = (%.6f,%.6f,%.6f)\n" , outRay.origin.x ,
+// 				outRay.origin.y , outRay.origin.z);
 		}
 		else
 		{
-			if (!fixIsLight) outRay.color *= (current_n * current_n / next_n * next_n);
+			if (!fixIsLight) 
+			{
+				outRay.color *= (current_n * current_n) / (next_n * next_n);				
+			}
 			outRay.color *= (1-er) / outRay.getCosineTerm();
 			outRay.photonProb = outRay.directionProb = 1-p;
 			outRay.insideObject = outSideObject;
+
+// 			if (!fixIsLight)
+// 			{
+// 				printf("T, pos = (%.6f,%.6f,%.6f), in = %d, out = %d\nfactor = %.6f/%.6f, cos_i = %.6f, cos_o = %.6f\nbsdf = (%.6f,%.6f,%6f)\n" , 
+// 					outRay.origin.x , outRay.origin.y , outRay.origin.z , 
+// 					go_in?1:0 , go_out?1:0 , current_n , next_n , 
+// 					normal.dot(-inRay.direction) , normal.dot(outRay.direction) ,
+// 					outRay.color.x , outRay.color.y , outRay.color.z);
+// 			}
 		}
 	}
 	outRay.direction.normalize();

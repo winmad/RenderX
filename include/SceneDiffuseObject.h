@@ -17,5 +17,7 @@ public:
 		material = new DiffuseMaterial();
 		materialList.push_back(material);
 	}
+
+	virtual std::string getType() { return "D"; }
 };
 

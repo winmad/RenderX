@@ -15,5 +15,7 @@ public:
 		materialList.push_back(material);
 		canMerge = true;
 	}
+
+	virtual std::string getType() { return "G"; }
 };
 

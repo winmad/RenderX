@@ -585,13 +585,19 @@ Ray HeterogeneousVolume::scatter(const Ray &inRay, const bool fixIsLight, const 
 		outRay.contactObject = (SceneObject*)this;
 		outRay.contactObjectTriangleID = inRay.intersectObjectTriangleID;
 
-		if(sin_phi > 1){
-			outRay.direction = reflDir;
-			outRay.insideObject = inRay.insideObject;
-			outRay.directionProb = 1;
-			//outRay.isDeltaDirection = true;
+		if(sin_phi > 1){ // no total internal reflection
+			outRay.direction = vec3f(0.f);
+			outRay.contactObject = NULL;
+			outRay.contactObjectTriangleID = -1;
 			outRay.directionSampleType = Ray::DEFINITE;
-			outRay.photonType = Ray::NOUSE;
+			return outRay;
+
+// 			outRay.direction = reflDir;
+// 			outRay.insideObject = inRay.insideObject;
+// 			outRay.directionProb = 1;
+// 			//outRay.isDeltaDirection = true;
+// 			outRay.directionSampleType = Ray::DEFINITE;
+// 			outRay.photonType = Ray::NOUSE;
 		}
 		else{
 			float phi = asin(sin_phi);
@@ -621,6 +627,7 @@ Ray HeterogeneousVolume::scatter(const Ray &inRay, const bool fixIsLight, const 
 			}
 			else
 			{
+				if (!fixIsLight) outRay.color *= (current_n * current_n) / (next_n * next_n);
 				outRay.color *= (1-er) / outRay.getCosineTerm();
 				outRay.directionProb = 1-p;
 				outRay.contactObject = outRay.insideObject = (SceneObject*)this;
@@ -715,14 +722,20 @@ Ray HeterogeneousVolume::scatter(const Ray &inRay, const bool fixIsLight, const 
 			float sin_phi = current_n / next_n * sin(theta);
 
 			outRay.intersectObject = NULL;
-			if(sin_phi > 1){
-				outRay.direction = reflDir;
-				outRay.insideObject = inRay.insideObject;
-				outRay.contactObject = (SceneObject*)this;
-				outRay.originProb = P_surface;
-				outRay.photonType = Ray::NOUSE;
-				//outRay.isDeltaDirection = true;
+			if(sin_phi > 1){ // no total internal reflection
+				outRay.direction = vec3f(0.f);
+				outRay.contactObject = NULL;
+				outRay.contactObjectTriangleID = -1;
 				outRay.directionSampleType = Ray::DEFINITE;
+				return outRay;
+
+// 				outRay.direction = reflDir;
+// 				outRay.insideObject = inRay.insideObject;
+// 				outRay.contactObject = (SceneObject*)this;
+// 				outRay.originProb = P_surface;
+// 				outRay.photonType = Ray::NOUSE;
+// 				//outRay.isDeltaDirection = true;
+// 				outRay.directionSampleType = Ray::DEFINITE;
 
 			}
 			else{
@@ -753,6 +766,7 @@ Ray HeterogeneousVolume::scatter(const Ray &inRay, const bool fixIsLight, const 
 				}
 				else
 				{
+					if (!fixIsLight) outRay.color *= (current_n * current_n) / (next_n * next_n);
 					outRay.color *= (1-er) / outRay.getCosineTerm();
 					outRay.directionProb = (1-p);
 					outRay.originProb = P_surface;

@@ -5,7 +5,6 @@ class SceneEmissiveObject : public SceneObject
 {
 protected:
 	vec3f color;
-	Ray scatter(const Ray& inRay , const bool fixIsLight , const bool russian) const;
 public:
 	vec3f getColor() const { return color; }
 	void setColor(const vec3f& color){ this->color = color; }
@@ -14,6 +13,9 @@ public:
 	}
 	bool emissive() const { return true; }
 
+	Ray scatter(const Ray& inRay , const bool fixIsLight , const bool russian) const;
 	vec3f getBSDF(const Ray& inRay, const Ray& outRay) const;
+
+	virtual std::string getType() { return "L"; }
 };
 
