@@ -19,7 +19,7 @@ Ray DiffuseMaterial::scatter(const SceneObject* object, const Ray& inRay,
 	}
 	//=================
 
-	LocalFrame lf = inRay.intersectObject->getAutoGenWorldLocalFrame(inRay.intersectObjectTriangleID, outRay.origin);
+	LocalFrame lf = inRay.intersectObject->getAutoGenWorldLocalFrame(inRay.intersectObjectTriangleID, outRay.origin, flatNormals);
 	
 	vec3f color = tex.getColor(inRay.intersectObject->getTexCoord(inRay.intersectObjectTriangleID, outRay.origin));
 	
@@ -80,7 +80,7 @@ float DiffuseMaterial::getDirectionSampleProbDensity(const Ray& inRay, const Ray
 {
 	if(!outRay.contactObject)
 		return 0;
-	LocalFrame lf = outRay.contactObject->getAutoGenWorldLocalFrame(outRay.contactObjectTriangleID, outRay.origin);
+	LocalFrame lf = outRay.contactObject->getAutoGenWorldLocalFrame(outRay.contactObjectTriangleID, outRay.origin, flatNormals);
 	vec3f color = tex.getColor(outRay.contactObject->getTexCoord(outRay.contactObjectTriangleID, outRay.origin));
 	float p = *std::max_element<float*>(&color.x, (&color.x)+3);
 	return p * cosineSphericalSampler.getProbDensity(lf, outRay.direction);
@@ -98,7 +98,7 @@ vec3f DiffuseMaterial::getBSDF(const Ray& inRay, const Ray& outRay) const
 	if(!outRay.contactObject)
 		return vec3f(0, 0, 0);
 	vec3f color = tex.getColor(outRay.contactObject->getTexCoord(outRay.contactObjectTriangleID, outRay.origin));
-	LocalFrame lf = outRay.contactObject->getAutoGenWorldLocalFrame(outRay.contactObjectTriangleID, outRay.origin);
+	LocalFrame lf = outRay.contactObject->getAutoGenWorldLocalFrame(outRay.contactObjectTriangleID, outRay.origin, flatNormals);
 	return bsdf.evaluate(lf, inRay.direction, outRay.direction, color);
 }
 

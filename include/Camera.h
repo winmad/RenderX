@@ -26,7 +26,7 @@ public:
 	vec2<float> transToPixel(const vec3f& point) const;
 	virtual float getDirectionSampleProbDensity(const Ray& inRay, const Ray& outRay) const;
 	virtual vec3f getBSDF(const Ray& inRay, const Ray& outRay) const { return vec3f(1, 1, 1); }
-	vec3f getWorldNormal(unsigned fi, const vec3f& position, bool flat = false) const;
+	vec3f getWorldNormal(unsigned fi, const vec3f& position, bool flat) const;
 
 	virtual std::string getType() { return "E"; }
 };

@@ -5,7 +5,8 @@ static FILE* fp = fopen("debug_pt.txt" , "w");
 
 vector<vec3f> PathTracer::renderPixels(const Camera& camera)
 {
-	int t_start = clock();
+	//int t_start = clock();
+	timer.StartStopWatch();
 	vector<vec3f> pixelColors(camera.width*camera.height, vec3f(0, 0, 0));
 
 	if(useConnection)
@@ -15,7 +16,8 @@ vector<vec3f> PathTracer::renderPixels(const Camera& camera)
 	{
 		for(unsigned s=0; s<spp; s++)
 		{
-			int t = clock();
+			//int t = clock();
+			timer.PushCurrentTime();
 #pragma omp parallel for
 			for(int p=0; p<pixelColors.size(); p++)
 			{
@@ -56,17 +58,21 @@ vector<vec3f> PathTracer::renderPixels(const Camera& camera)
 				//pixelColors[p] += color * eyePath[0].directionProb / (s+1);
 			}
 
+			printf("Iter: %d  IterTime: %.3lfs  TotalTime: %.3lfs\n", s+1, timer.PopCurrentTime(), 
+				timer.GetElapsedTime(0));
+
 			//if (clock() / 1000 >= lastTime)
-			if (s % outputIter == 0)
+			if (s % outputIter == 0 && !isDebug)
 			{
-				unsigned nowTime = (clock()) / 1000;
+				unsigned nowTime = (unsigned)timer.GetElapsedTime(0);
 				showCurrentResult(pixelColors , &nowTime , &s);
 				//showCurrentResult(pixelColors , &lastTime , &s);
 				//lastTime += timeInterval;
 			}
 			else
 				showCurrentResult(pixelColors);
-			printf("Iter: %d  IterTime: %lus  TotalTime: %lus\n", s+1, (clock()-t)/1000, (clock()-t_start)/1000);
+
+			if (timer.GetElapsedTime(0) > runtime) break;
 		}
 	}
 	else
@@ -153,17 +159,21 @@ vector<vec3f> PathTracer::renderPixels(const Camera& camera)
 				//pixelColors[p] += color / (s+1);
 			}
 
+			printf("Iter: %d  IterTime: %.3lfs  TotalTime: %.3lfs\n", s+1, timer.PopCurrentTime(), 
+				timer.GetElapsedTime(0));
+
 			//if (clock() / 1000 >= lastTime)
-			if (s % outputIter == 0)
+			if (s % outputIter == 0 && !isDebug)
 			{
-				unsigned nowTime = (clock()) / 1000;
+				unsigned nowTime = (unsigned)timer.GetElapsedTime(0);
 				showCurrentResult(pixelColors , &nowTime , &s);
 				//showCurrentResult(pixelColors , &lastTime , &s);
 				//lastTime += timeInterval;
 			}
 			else
 				showCurrentResult(pixelColors);
-			printf("Iter: %d  IterTime: %lus  TotalTime: %lus\n", s+1, (clock()-t)/1000, (clock()-t_start)/1000);
+
+			if (timer.GetElapsedTime(0) > runtime) break;
 		}
 	}
 	return pixelColors;

@@ -18,7 +18,7 @@ Ray SceneParallelLight::emit()
 	ray.contactObject = this;
 	ray.contactObjectTriangleID = index;
 	ray.origin = genRandTrianglePosition(ray.contactObjectTriangleID);
-	LocalFrame lf = ray.contactObject->getAutoGenWorldLocalFrame(ray.contactObjectTriangleID, ray.origin);
+	LocalFrame lf = ray.contactObject->getAutoGenWorldLocalFrame(ray.contactObjectTriangleID, ray.origin, flatNormals);
 	ray.direction = lf.n;
 	if(ray.direction.dot(ray.getContactNormal()) < 0)
 		ray.direction = - ray.direction;

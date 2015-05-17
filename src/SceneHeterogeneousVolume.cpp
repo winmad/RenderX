@@ -563,7 +563,7 @@ Ray HeterogeneousVolume::scatter(const Ray &inRay, const bool fixIsLight, const 
 	// CASE1: Go in volume.
 	if(go_in_vol){
 		vec3f position = inRay.origin + inRay.direction*inRay.intersectDist;
-		vec3f normal = inRay.intersectObject->getWorldNormal(inRay.intersectObjectTriangleID, position);
+		vec3f normal = inRay.intersectObject->getWorldNormal(inRay.intersectObjectTriangleID, position, flatNormals);
 
 		outRay.origin = position;
 		outRay.direction = inRay.direction;
@@ -709,7 +709,7 @@ Ray HeterogeneousVolume::scatter(const Ray &inRay, const bool fixIsLight, const 
 		outRay.color = vec3f(1,1,1);
 		bool going_out = (inRay.intersectObject == this);
 		if(going_out){
-			vec3f normal = inRay.intersectObject->getWorldNormal(inRay.intersectObjectTriangleID, outRay.origin);
+			vec3f normal = inRay.intersectObject->getWorldNormal(inRay.intersectObjectTriangleID, outRay.origin, flatNormals);
 			vec3f reflDir = -normal.dot(inRay.direction)*normal*2 + inRay.direction;
 			reflDir.normalize();
 			float theta = acos(inRay.direction.dot(normal));

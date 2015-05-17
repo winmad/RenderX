@@ -5,7 +5,8 @@ static FILE* fp = fopen("debug_bpt.txt" , "w");
 
 vector<vec3f> BidirectionalPathTracer::renderPixels(const Camera& camera)
 {
-	unsigned t_start = clock();
+	//unsigned t_start = clock();
+	timer.StartStopWatch();
 
 	vector<vec3f> pixelColors(camera.width * camera.height, vec3f(0, 0, 0));
 	vector<omp_lock_t> pixelLocks(pixelColors.size());
@@ -29,8 +30,8 @@ vector<vec3f> BidirectionalPathTracer::renderPixels(const Camera& camera)
 
 		string cmd;
 
-		unsigned t = clock();
-
+		//unsigned t = clock();
+		timer.PushCurrentTime();
 		if(!renderer->scene.usingGPU())
 		{
 #pragma omp parallel for
@@ -92,18 +93,21 @@ vector<vec3f> BidirectionalPathTracer::renderPixels(const Camera& camera)
 			pixelColors[i] += singleImageColors[i] / (s + 1);//*camera.width*camera.height;
 		}
 
-		printf("Iter: %d  IterTime: %lus  TotalTime: %lus\n", s+1, (clock()-t)/1000, (clock()-t_start)/1000);
+		printf("Iter: %d  IterTime: %.3lfs  TotalTime: %.3lfs\n", s+1, timer.PopCurrentTime(), 
+			timer.GetElapsedTime(0));
 
 		//if (clock() / 1000 >= lastTime)
-		if (s % 200 == 0 && !isDebug)
+		if (s % outputIter == 0 && !isDebug)
 		{
-			unsigned nowTime = clock() / 1000;
+			unsigned nowTime = (unsigned)timer.GetElapsedTime(0);
 			showCurrentResult(pixelColors , &nowTime , &s);
 			//showCurrentResult(pixelColors , &lastTime , &s);
 			//lastTime += timeInterval;
 		}
 		else
 			showCurrentResult(pixelColors);
+
+		if (timer.GetElapsedTime(0) > runtime) break;
 	}
 	return pixelColors;
 }

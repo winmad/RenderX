@@ -40,7 +40,7 @@ void MCRenderer::resetInsideObject(Ray& ray)
 {
 	if(!ray.contactObject)
 		return;
-	vec3f normal = ray.contactObject->getWorldNormal(ray.contactObjectTriangleID, ray.origin);
+	vec3f normal = ray.contactObject->getWorldNormal(ray.contactObjectTriangleID, ray.origin, flatNormals);
 	if(ray.direction.dot(normal)<0)
 		ray.insideObject = ray.contactObject;
 	else
@@ -172,14 +172,50 @@ void MCRenderer::samplePathIter(Path& path, Ray& prevRay, unsigned depth, bool i
 	}
 	else if(prevRay.intersectObject)
 	{
-		nextRay = prevRay.intersectObject->scatter(prevRay , isLightPath , true);
+		nextRay = prevRay.intersectObject->scatter(prevRay , isLightPath , true);	
 	}
 	else
 	{
 		path.push_back(termRay);
 		return;
 	}
-	
+
+	if (nextRay.direction.length() > 0.5 && nextRay.contactObject != NULL)
+	{
+		vec3f geoN = nextRay.getContactNormal(false);
+		vec3f shdN = nextRay.getContactNormal(true);
+		vec3f wi = -prevRay.direction;
+		vec3f wo = nextRay.direction;
+		float wiDotGeoN = geoN.dot(wi);
+		float woDotGeoN = geoN.dot(wo);
+		float wiDotShdN = shdN.dot(wi);
+		float woDotShdN = shdN.dot(wo);
+
+		// prevent light leak due to shading normals
+		if (wiDotGeoN * wiDotShdN <= 0 || woDotGeoN * woDotShdN <= 0)
+		{
+			//printf("wi: %.6f %.6f, wo: %.6f %.6f\n" , wiDotGeoN , wiDotShdN , woDotGeoN , woDotShdN);
+			nextRay.direction = vec3f(0.f);
+			nextRay.color = vec3f(0.f);
+		}
+
+		// adjoint bsdf correction
+		if (isLightPath)
+		{
+			float denom = wiDotGeoN * woDotShdN;
+			if (std::abs(denom) < 1e-2)
+			{
+				nextRay.direction = vec3f(0.f);
+				nextRay.color = vec3f(0.f);
+			}
+			else
+			{
+				float correction = std::abs((wiDotShdN * woDotGeoN) / (denom));
+				nextRay.color *= correction;
+			}		
+		}
+	}
+
 // 	if (!isLightPath)
 // 	{
 // 		std::string str;

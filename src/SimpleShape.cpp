@@ -163,6 +163,8 @@ void SimpleShape::loadShape(const string &fileName, bool normalize, vector<Simpl
 				sscanf(parms[0],"%f",&vn.x);
 				sscanf(parms[1],"%f",&vn.y);
 				sscanf(parms[2],"%f",&vn.z);
+				//if (std::abs(vn.length() - 1) > 1e-6) printf("not normalized!\n");
+				vn.normalize();
 				vertexNormalList.push_back(vn);
 				if(split && shape)
 					shape->vertexNormalList.push_back(vn);
@@ -312,21 +314,21 @@ vec3f SimpleShape::getWorldNormal(unsigned fi, const vec3f& position, bool flat)
 	vec3f b2 = vps[2] - vps[0];
 	vec3f faceNormal = b1.cross(b2);
 	faceNormal.normalize();
-	if(flat)
-		return faceNormal;
+	//if(flat)
+	//	return faceNormal;
 	for(unsigned i=0; i<3; i++)
 	{
 		if(vertexNormalList.size())
 		{
 			vns[i] = vertexNormalList[faceVertexNormalIndexList[fi][i]];
 			vns[i] = vec3f(normalMat * vec4<float>(vns[i], 0));
+			vns[i].normalize();
 		}
 		else
 		{
 			return faceNormal;
 		}
 	}
-	
 	vec3f v = position - vps[0];
 	float d12 = b1.dot(b2);
 	float l1 = b1.length();
@@ -335,6 +337,15 @@ vec3f SimpleShape::getWorldNormal(unsigned fi, const vec3f& position, bool flat)
 	float u1 = (v.dot(b1)-u2*d12)/(l1*l1);
 	vec3f normal = (1-u1-u2)*vns[0] + u1*vns[1] + u2*vns[2];
 	normal.normalize();
+	if (flat)
+	{
+		if (normal.dot(faceNormal) < 0)
+		{
+			//printf("flip face normal!\n");
+			faceNormal = -faceNormal;
+		}
+		return faceNormal;
+	}
 	return normal;
 }
 

@@ -15,7 +15,7 @@ Ray SceneVPMObject::scatter(const Ray& inRay, const bool fixIsLight, const bool 
 	// go in volume
 	if(go_in_vol){
 		vec3f position = inRay.origin + inRay.direction*inRay.intersectDist;
-		LocalFrame lf = inRay.intersectObject->getAutoGenWorldLocalFrame(inRay.intersectObjectTriangleID, position);
+		LocalFrame lf = inRay.intersectObject->getAutoGenWorldLocalFrame(inRay.intersectObjectTriangleID, position, flatNormals);
 		vec3f normal = lf.n;
 		outRay.origin = position;
 		outRay.direction = inRay.direction;
@@ -155,7 +155,7 @@ Ray SceneVPMObject::scatter(const Ray& inRay, const bool fixIsLight, const bool 
 		bool going_out = (inRay.intersectObject == this);
 		
 		if(going_out){
-			LocalFrame lf = inRay.intersectObject->getAutoGenWorldLocalFrame(inRay.intersectObjectTriangleID, outRay.origin);
+			LocalFrame lf = inRay.intersectObject->getAutoGenWorldLocalFrame(inRay.intersectObjectTriangleID, outRay.origin, flatNormals);
 			vec3f normal = lf.n;
 			vec3f reflDir = -normal.dot(inRay.direction)*normal*2 + inRay.direction;
 			reflDir.normalize();

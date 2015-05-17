@@ -225,6 +225,9 @@
     <ClInclude Include="..\include\visualizeUtils.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\Fresnel.h">
+      <Filter>头文件\Material</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\KDTree.cpp">

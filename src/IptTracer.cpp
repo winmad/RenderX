@@ -680,7 +680,7 @@ Ray IptTracer::genIntermediateSamplesByPhotons(vector<IptPathState>& partialSubP
 	Real originProb;
 
     LocalFrame lf = ray.contactObject->getAutoGenWorldLocalFrame(
-        ray.contactObjectTriangleID , o);
+        ray.contactObjectTriangleID , o, flatNormals);
 
     // find ray origin by disturb
     UniformSphericalSampler uniformSphericalSampler;

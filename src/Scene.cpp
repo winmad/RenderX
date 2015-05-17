@@ -184,7 +184,7 @@ float Scene::SurfaceSampler::getDirectionProbDensity(const Ray& ray) const
 	//UniformSphericalSampler uniformSphericalSampler;
 	CosineSphericalSampler cosineSphericalSampler;
 	
-	LocalFrame lf = ray.contactObject->getAutoGenWorldLocalFrame(ray.contactObjectTriangleID, ray.origin);
+	LocalFrame lf = ray.contactObject->getAutoGenWorldLocalFrame(ray.contactObjectTriangleID, ray.origin, flatNormals);
 	
 	//return uniformSphericalSampler.getProbDensity(lf, ray.direction) * 2;
 	return cosineSphericalSampler.getProbDensity(lf , ray.direction);
@@ -371,14 +371,14 @@ SceneObject* Scene::findInsideObject(const Ray& ray, const SceneObject* currentO
 			dist = objKDTrees[i].intersect(kdray_back, tid);
 			if(dist<1e-6f)
 				continue;
-			normal = objects[i]->getWorldNormal(tid, kdray_back.origin + kdray_back.direction*dist);
+			normal = objects[i]->getWorldNormal(tid, kdray_back.origin + kdray_back.direction*dist, flatNormals);
 			if(normal.dot(kdray_back.direction) < 1e-6f)
 				continue;
 
 			dist = objKDTrees[i].intersect(kdray_front, tid);
 			if(dist<1e-6f)
 				continue;
-			normal = objects[i]->getWorldNormal(tid, kdray_front.origin + kdray_front.direction*dist);
+			normal = objects[i]->getWorldNormal(tid, kdray_front.origin + kdray_front.direction*dist, flatNormals);
 			if(normal.dot(kdray_front.direction) < 1e-6f)
 				continue;
 
@@ -403,14 +403,14 @@ bool Scene::checkInsideObject(const Ray& ray, const int insideObjectIndex)
 	dist = objKDTrees[insideObjectIndex].intersect(kdray_back, tid);
 	if(dist<1e-6f)
 		return 0;
-	normal = objects[insideObjectIndex]->getWorldNormal(tid, kdray_back.origin + kdray_back.direction*dist);
+	normal = objects[insideObjectIndex]->getWorldNormal(tid, kdray_back.origin + kdray_back.direction*dist, flatNormals);
 	if(normal.dot(kdray_back.direction) < 1e-6f)
 		return 0;
 
 	dist = objKDTrees[insideObjectIndex].intersect(kdray_front, tid);
 	if(dist<1e-6f)
 		return 0;
-	normal = objects[insideObjectIndex]->getWorldNormal(tid, kdray_front.origin + kdray_front.direction*dist);
+	normal = objects[insideObjectIndex]->getWorldNormal(tid, kdray_front.origin + kdray_front.direction*dist, flatNormals);
 	if(normal.dot(kdray_front.direction) < 1e-6f)
 		return 0;
 
@@ -476,7 +476,7 @@ vector<bool> Scene::testVisibility(const vector<Ray>& rays)
 			int tid = int(dist_tid[i].y);
 			ObjSourceInformation *osi = (ObjSourceInformation *)tree.triangleList[tid].sourceInformation;
 			bool legal = objects[osi->objID] != rays[i].contactObject;
-			vec3f normal = objects[osi->objID]->SimpleShape::getWorldNormal(osi->triangleID, rays[i].origin+dist_tid[i].x*rays[i].direction);
+			vec3f normal = objects[osi->objID]->SimpleShape::getWorldNormal(osi->triangleID, rays[i].origin+dist_tid[i].x*rays[i].direction, flatNormals);
 			bool in = normal.dot(rays[i].direction) < 0;
 			legal |= objects[osi->objID] == rays[i].insideObject && !in;
 			visibilityList[i] = false;

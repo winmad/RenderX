@@ -1,3 +1,4 @@
+#pragma once
 #include "nvVector.h"
 #include <cassert>
 
@@ -17,3 +18,6 @@ using namespace nv;
 
 typedef vec2<double> vec2d;
 typedef vec3<double> vec3d;
+
+// false: use shading normal, true: use geometric normal
+const bool flatNormals = false;

@@ -8,7 +8,6 @@
 #include "CountHashGrid.h"
 #include "macros.h"
 #include "SceneVPMObject.h"
-#include "TimeManager.h"
 #include "visualizeUtils.h"
 
 static FILE *fp2 = fopen("debug_ipt_gather_y.txt" , "w");
@@ -96,8 +95,6 @@ public:
 	int pixelNum , lightPathNum , cameraPathNum , interPathNum , partialPathNum;
 	int totPathNum;
 	int lightPhotonNum , partialPhotonNum;
-
-    TimeManager timer;
 
 	IptTracer(Renderer* renderer) : MCRenderer(renderer)
 	{ 

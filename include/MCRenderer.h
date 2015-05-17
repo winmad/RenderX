@@ -8,6 +8,7 @@
 
 #include "Renderer.h"
 #include "macros.h"
+#include "TimeManager.h"
 #include <cmath>
 
 typedef vector<Ray> Path;
@@ -55,6 +56,7 @@ protected:
 
 	int outputIter;
 
+	TimeManager timer;
     double runtime;
     
 	vector<Ray> showPath;

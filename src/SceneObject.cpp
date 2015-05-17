@@ -185,7 +185,7 @@ Ray SceneObject::emit(bool isUniformOrigin , bool isUniformDir) const
 	UniformSphericalSampler uniformSphericalSampler;
 	CosineSphericalSampler cosineSphericalSampler;
 
-	LocalFrame lf = ray.contactObject->getAutoGenWorldLocalFrame(ray.contactObjectTriangleID, ray.origin);
+	LocalFrame lf = ray.contactObject->getAutoGenWorldLocalFrame(ray.contactObjectTriangleID, ray.origin, flatNormals);
 
 	if (isUniformDir)
 		ray.direction = uniformSphericalSampler.genSample(lf);
@@ -238,7 +238,7 @@ float SceneObject::getDirectionSampleProbDensity(const Ray& inRay, const Ray& ou
 		//UniformSphericalSampler uniformSphericalSampler;
 		CosineSphericalSampler cosineSphericalSampler;
 
-		LocalFrame lf = outRay.contactObject->getAutoGenWorldLocalFrame(outRay.contactObjectTriangleID, outRay.origin);
+		LocalFrame lf = outRay.contactObject->getAutoGenWorldLocalFrame(outRay.contactObjectTriangleID, outRay.origin, flatNormals);
 
 		//return uniformSphericalSampler.getProbDensity(lf, outRay.direction) * 2;
 		return cosineSphericalSampler.getProbDensity(lf , outRay.direction);

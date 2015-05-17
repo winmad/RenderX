@@ -13,7 +13,7 @@ bool NoSelfIntersectionCondition::legal(const KDTree::Ray& ray, const KDTree::Tr
 {
 	SceneObject *intersectObject = scene->objects[((Scene::ObjSourceInformation*)tri.sourceInformation)->objID];
 	unsigned fi = ((Scene::ObjSourceInformation*)tri.sourceInformation)->triangleID;
-	float d = ray.direction.dot(intersectObject->getWorldNormal(fi, ray.origin + ray.direction*dist));
+	float d = ray.direction.dot(intersectObject->getWorldNormal(fi, ray.origin + ray.direction*dist, flatNormals));
 	bool in = d <= 0;
 	bool out = d >= 0;
 	if(currentInsideObject == currentContactObject)

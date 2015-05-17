@@ -6,7 +6,7 @@ Ray GlossyMaterial::scatter(const SceneObject* object, const Ray& inRay,
 {
 	Ray outRay;
 	vec3f position = inRay.origin + inRay.direction*inRay.intersectDist;
-	LocalFrame lf = inRay.intersectObject->getAutoGenWorldLocalFrame(inRay.intersectObjectTriangleID, position);
+	LocalFrame lf = inRay.intersectObject->getAutoGenWorldLocalFrame(inRay.intersectObjectTriangleID, position, flatNormals);
 	vec3f normal = lf.n;
 
 	vec3f color = colorTex.getColor(inRay.intersectObject->getTexCoord(inRay.intersectObjectTriangleID, outRay.origin));
@@ -74,7 +74,7 @@ vec3f GlossyMaterial::getBSDF(const Ray& inRay, const Ray& outRay) const
 		return vec3f(0, 0, 0);
 	vec3f color = colorTex.getColor(outRay.contactObject->getTexCoord(outRay.contactObjectTriangleID, outRay.origin));
 	float p = *std::max_element<float*>(&color.x, (&color.x)+3);
-	LocalFrame lf = outRay.contactObject->getAutoGenWorldLocalFrame(outRay.contactObjectTriangleID, outRay.origin);
+	LocalFrame lf = outRay.contactObject->getAutoGenWorldLocalFrame(outRay.contactObjectTriangleID, outRay.origin, flatNormals);
 	
 	vec3f coeff = coeffTex.getColor(outRay.contactObject->getTexCoord(outRay.contactObjectTriangleID, outRay.origin));
 	return p * bsdf.evaluate(lf, inRay.direction, outRay.direction, color, coeff.x);

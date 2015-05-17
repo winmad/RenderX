@@ -24,7 +24,7 @@ void Renderer::preview()
 			{
 				SceneObject *intersectObject = scene->objects[((Scene::ObjSourceInformation*)tri.sourceInformation)->objID];
 				unsigned fi = ((Scene::ObjSourceInformation*)tri.sourceInformation)->triangleID;
-				bool in = ray.direction.dot(intersectObject->getWorldNormal(fi, ray.origin + ray.direction*dist))<0;
+				bool in = ray.direction.dot(intersectObject->getWorldNormal(fi, ray.origin + ray.direction*dist, flatNormals))<0;
 				return in;
 			}
 		} condition;
@@ -36,7 +36,7 @@ void Renderer::preview()
 			ray.origin = camera.position;
 			Scene::ObjSourceInformation osi;
 			float dist = scene.intersect(ray, osi, &condition);
-			vec3f normal = dist >= 0 ? scene.objects[osi.objID]->getWorldNormal(osi.triangleID, ray.origin + ray.direction*dist) : vec3f(0, 0, 0);
+			vec3f normal = dist >= 0 ? scene.objects[osi.objID]->getWorldNormal(osi.triangleID, ray.origin + ray.direction*dist, flatNormals) : vec3f(0, 0, 0);
 			((vec3f*)image->imageData)[y*camera.width + x] = vec3f(1, 1, 1) * abs(ray.direction.dot(normal));
 		}
 	}

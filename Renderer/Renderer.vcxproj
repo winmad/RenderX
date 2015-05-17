@@ -157,6 +157,7 @@
     <ClInclude Include="..\include\DiffuseBSDF.h" />
     <ClInclude Include="..\include\DiffuseMaterial.h" />
     <ClInclude Include="..\include\DistanceSampler.h" />
+    <ClInclude Include="..\include\Fresnel.h" />
     <ClInclude Include="..\include\GlossyBSDF.h" />
     <ClInclude Include="..\include\GlossyMaterial.h" />
     <ClInclude Include="..\include\Hashgrid.h" />

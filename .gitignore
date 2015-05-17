@@ -1,6 +1,9 @@
 data/
 build/
 xcode/
+Renderer/
+experiment_log/
+Makefile
 *.bmp
 *.pfm
 *.log
