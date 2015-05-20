@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "RefractiveMaterial.h"
 #include "Fresnel.h"
-
+/*
 Ray RefractiveMaterial::scatter(const SceneObject* object, const Ray& inRay, 
 	const bool fixIsLight, const bool russian) const
 {
@@ -126,9 +126,9 @@ Ray RefractiveMaterial::scatter(const SceneObject* object, const Ray& inRay,
 	}
 	return outRay;
 }
+*/
 
 
-/*
 Ray RefractiveMaterial::scatter(const SceneObject* object, const Ray& inRay, 
 	const bool fixIsLight, const bool russian) const
 {
@@ -267,4 +267,3 @@ Ray RefractiveMaterial::scatter(const SceneObject* object, const Ray& inRay,
 
 	return outRay;
 }
-*/

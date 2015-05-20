@@ -180,7 +180,7 @@ void MCRenderer::samplePathIter(Path& path, Ray& prevRay, unsigned depth, bool i
 		return;
 	}
 
-	if (nextRay.direction.length() > 0.5 && nextRay.contactObject != NULL)
+	if (nextRay.direction.length() > 0.5 && nextRay.insideObject == NULL && nextRay.contactObject != NULL)
 	{
 		vec3f geoN = nextRay.getContactNormal(false);
 		vec3f shdN = nextRay.getContactNormal(true);
@@ -200,20 +200,20 @@ void MCRenderer::samplePathIter(Path& path, Ray& prevRay, unsigned depth, bool i
 		}
 
 		// adjoint bsdf correction
-		if (isLightPath)
-		{
-			float denom = wiDotGeoN * woDotShdN;
-			if (std::abs(denom) < 1e-2)
-			{
-				nextRay.direction = vec3f(0.f);
-				nextRay.color = vec3f(0.f);
-			}
-			else
-			{
-				float correction = std::abs((wiDotShdN * woDotGeoN) / (denom));
-				nextRay.color *= correction;
-			}		
-		}
+// 		if (isLightPath)
+// 		{
+// 			float denom = wiDotGeoN * woDotShdN;	
+// 			if (std::abs(denom) < 1e-2)
+// 			{
+// 				nextRay.direction = vec3f(0.f);
+// 				nextRay.color = vec3f(0.f);
+// 			}
+// 			else
+// 			{
+// 				float correction = std::abs((wiDotShdN * woDotGeoN) / (denom));
+// 				nextRay.color *= correction;
+// 			}		
+// 		}
 	}
 
 // 	if (!isLightPath)
