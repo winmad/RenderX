@@ -1775,6 +1775,26 @@ void IptTracer::sampleMergePath(Path &path, Ray &prevRay, uint depth)
 		}
 	}
 
+	if (nextRay.direction.length() > 0.5 && nextRay.contactObject != NULL)
+	{
+		vec3f geoN = nextRay.getContactNormal(false);
+		vec3f shdN = nextRay.getContactNormal(true);
+		vec3f wi = -prevRay.direction;
+		vec3f wo = nextRay.direction;
+		float wiDotGeoN = geoN.dot(wi);
+		float woDotGeoN = geoN.dot(wo);
+		float wiDotShdN = shdN.dot(wi);
+		float woDotShdN = shdN.dot(wo);
+
+		// prevent light leak due to shading normals
+		if (wiDotGeoN * wiDotShdN <= 0 || woDotGeoN * woDotShdN <= 0)
+		{
+			//printf("wi: %.6f %.6f, wo: %.6f %.6f\n" , wiDotGeoN , wiDotShdN , woDotGeoN , woDotShdN);
+			nextRay.direction = vec3f(0.f);
+			nextRay.color = vec3f(0.f);
+		}
+	}
+
 	if (nextRay.direction.length() < 0.5) 
 	{
 		path.push_back(nextRay);		
