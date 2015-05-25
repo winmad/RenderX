@@ -58,7 +58,7 @@ protected:
 
 	TimeManager timer;
     double runtime;
-	double timeStep , lastTime;
+	unsigned timeStep , lastTime;
     
 	vector<Ray> showPath;
 
