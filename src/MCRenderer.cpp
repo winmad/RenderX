@@ -486,7 +486,7 @@ void MCRenderer::showCurrentResult(const vector<vec3f>& pixelColors , unsigned* 
 			fileName.push_back(iterStr[i]);
 		fileName += ".pfm";
 		saveImagePFM(fileName , image);
-		//printf("savePath = %s\n" , fileName.c_str());
+		printf("savePath = %s\n" , fileName.c_str());
 	}
 
 	for(int p=0; p<3*image->width*image->height; p++)

@@ -378,6 +378,8 @@ void ConfigManager::load(const string &configFilePath)
 			renderer->mcRenderer->setMaxDepth(atoi(nodeRenderer->first_node("maxDepth")->value()));
         if (nodeRenderer->first_node("spp"))
             renderer->mcRenderer->setSpp(atoi(nodeRenderer->first_node("spp")->value()));
+		if (nodeRenderer->first_node("isDebug"))
+			(renderer->mcRenderer)->isDebug = (atoi(nodeRenderer->first_node("isDebug")->value()) == 1 ? true : false);
     }
 
     xml_node<> *nodeTime = nodeConfig->first_node("time");
