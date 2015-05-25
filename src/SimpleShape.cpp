@@ -196,7 +196,7 @@ void SimpleShape::loadShape(const string &fileName, bool normalize, vector<Simpl
 		for(unsigned i=0; split && i<splitedShapes.size(); i++)
 		{
 			printf("unitized!!!\n");
-			splitedShapes[i]->setTransform(unitizeMat);
+			splitedShapes[i]->setTransform(transpose(unitizeMat));
 			splitedShapes[i]->applyTransform();
 			splitedShapes[i]->setTransform(transform);
 		}
@@ -205,7 +205,7 @@ void SimpleShape::loadShape(const string &fileName, bool normalize, vector<Simpl
 		changeHandness.set_scale(vec3f(-1.f , 1.f , 1.f));
 		matrix4<float> trans;
 		if (split)
-			trans = changeHandness * transform * unitizeMat;
+			trans = changeHandness * transform * transpose(unitizeMat);
 		else
 			trans = changeHandness * transform * transpose(unitizeMat);
 

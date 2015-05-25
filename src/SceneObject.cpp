@@ -260,7 +260,7 @@ vec3f SceneObject::getWorldNormal(unsigned fi, const vec3f& position, bool flat)
 	if(bumpTex.size() <= 1 || fi >= faceVertexTexCoordIndexList.size())
 		return original_normal;
 
-	printf("use not original normal\n");
+	//printf("use not original normal\n");
 
 	vec3f vps[3], vts[3], vns[3];
 	for(unsigned i=0; i<3; i++)

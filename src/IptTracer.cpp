@@ -898,26 +898,25 @@ Ray IptTracer::genIntermediateSamples(Scene& scene)
 void IptTracer::genIntermediatePaths(omp_lock_t& cmdLock , vector<Path*>& interPathList)
 {
 	// preprocess
-	vector<IptPathState> lightSubPathList(partialSubPathList);
-    //PointKDTree<IptPathState> tree(lightSubPathList);
-	int N = lightSubPathList.size();
-	weights.resize(N + 1 , 0);
-	for (int i = 0; i < N; i++)
-	{
-		float intensity = y(lightSubPathList[i].throughput);
-
-		float volScale = 1.f;
-		if ((lightSubPathList[i].ray->insideObject && !lightSubPathList[i].ray->contactObject && totVol > 0) ||
-			totVol < 1e-7f)
-			volScale = 1.f;
-
-		weights[i + 1] = weights[i] + intensity * intensity * volScale;
-		//weights[i + 1] = weights[i] + volScale;
-	}
-	float sum = weights[N];
-	for (int i = 0; i <= N; i++)
-		weights[i] /= sum;
-
+// 	vector<IptPathState> lightSubPathList(partialSubPathList);
+//     PointKDTree<IptPathState> tree(lightSubPathList);
+//	int N = lightSubPathList.size();
+// 	weights.resize(N + 1 , 0);
+// 	for (int i = 0; i < N; i++)
+// 	{
+// 		float intensity = y(lightSubPathList[i].throughput);
+// 
+// 		float volScale = 1.f;
+// 		if ((lightSubPathList[i].ray->insideObject && !lightSubPathList[i].ray->contactObject && totVol > 0) ||
+// 			totVol < 1e-7f)
+// 			volScale = 1.f;
+// 
+// 		weights[i + 1] = weights[i] + intensity * intensity * volScale;
+// 		//weights[i + 1] = weights[i] + volScale;
+// 	}
+// 	float sum = weights[N];
+// 	for (int i = 0; i <= N; i++)
+// 		weights[i] /= sum;
 	std::vector<vec3f> positions;
 
 #pragma omp parallel for
@@ -1148,20 +1147,22 @@ void IptTracer::mergePartialPaths(omp_lock_t& cmdLock)
 
 	bool f = checkCycle;
 	int checkTime = checkCycleIters;
-	vis.clear();
-	inStack.clear();
-	cannotBeCycle.clear();
-	vis.resize(partialPhotonNum - lightPhotonNum);
-	inStack.resize(partialPhotonNum - lightPhotonNum);
-	cannotBeCycle.resize(partialPhotonNum - lightPhotonNum);
-
-	// topological sort
-	for (int i = 0; i < vis.size(); i++)
-	{
-		vis[i] = cannotBeCycle[i] = 0;
-	}
+	
 	if (checkCycle)
 	{
+		vis.clear();
+		inStack.clear();
+		cannotBeCycle.clear();
+		vis.resize(partialPhotonNum - lightPhotonNum);
+		inStack.resize(partialPhotonNum - lightPhotonNum);
+		cannotBeCycle.resize(partialPhotonNum - lightPhotonNum);
+
+		// topological sort
+		for (int i = 0; i < vis.size(); i++)
+		{
+			vis[i] = cannotBeCycle[i] = 0;
+		}
+
 		int totEdges = 0;
 		vector<int> indeg(partialPhotonNum - lightPhotonNum , 0);
 		for (int i = lightPhotonNum; i < partialPhotonNum; i++)

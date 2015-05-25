@@ -123,7 +123,7 @@ public:
 		showLightPhotons = false;
 		showInterPhotons = false;
 
-		checkCycle = true;
+		checkCycle = false;
 		checkCycleIters = 100;
 
 		isDebug = true;
@@ -148,7 +148,7 @@ public:
 		if (pathNum)
 			s *= (float)*pathNum;
 		Real res = M_PI * mergeRadius * mergeRadius * s;
-		return res * mergeRatio;
+		return powf(res * mergeRatio , 2.f);
 	}
 	
 	Real kernel(Real distSqr , Real radiusSqr)
