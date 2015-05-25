@@ -20,13 +20,11 @@ protected:
 
 	void colorByConnectingPaths(vector<omp_lock_t> &pixelLocks, const Camera& camera, vector<vec3f>& colors, const Path& eyePath, const Path& lightPath, vector<unsigned>* visibilityList = NULL);
 public:
-	unsigned timeInterval , lastTime;
 
 	BidirectionalPathTracer(Renderer* renderer) : MCRenderer(renderer)
 	{ 
 		spp = -1;
 		usePT = false;
-		lastTime = timeInterval = 3600;
 	}
 	virtual vector<vec3f> renderPixels(const Camera& camera);
 };

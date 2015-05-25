@@ -43,15 +43,12 @@ public:
 	std::vector<int> lightStateIndex;
 	std::vector<int> cameraStateIndex;
 
-	unsigned timeInterval , lastTime;
-
 	NewBidirectionalPathTracer(Renderer* renderer) : MCRenderer(renderer)
 	{ 
 		pixelNum = renderer->camera.height * renderer->camera.width;
 		lightPathNum = cameraPathNum = pixelNum;
 		spp = -1;
 		usePT = false;
-		lastTime = timeInterval = 3600;
 	}
 	virtual vector<vec3f> renderPixels(const Camera& camera);
 

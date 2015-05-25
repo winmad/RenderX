@@ -151,6 +151,7 @@
     <ClInclude Include="..\include\BidirectionalPathTracer.h" />
     <ClInclude Include="..\include\BSDF.h" />
     <ClInclude Include="..\include\Camera.h" />
+    <ClInclude Include="..\include\colormap.h" />
     <ClInclude Include="..\include\ConfigManager.h" />
     <ClInclude Include="..\include\CosineSphericalSampler.h" />
     <ClInclude Include="..\include\CountHashGrid.h" />
@@ -212,6 +213,7 @@
     <ClCompile Include="..\cmp\compare.cpp" />
     <ClCompile Include="..\src\BidirectionalPathTracer.cpp" />
     <ClCompile Include="..\src\Camera.cpp" />
+    <ClCompile Include="..\src\colormap.cpp" />
     <ClCompile Include="..\src\ConfigManager.cpp" />
     <ClCompile Include="..\src\DiffuseMaterial.cpp" />
     <ClCompile Include="..\src\GlossyMaterial.cpp" />

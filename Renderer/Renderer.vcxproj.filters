@@ -228,6 +228,9 @@
     <ClInclude Include="..\include\Fresnel.h">
       <Filter>头文件\Material</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\colormap.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\KDTree.cpp">
@@ -333,6 +336,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\cmp\compare.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\colormap.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -5,9 +5,11 @@
 #include "NoSelfIntersectionCondition.h"
 #include "SceneVPMObject.h"
 #include "SceneHeteroGeneousVolume.h"
+#include "colormap.h"
+#include <algorithm>
 
 static FILE *fp = fopen("debug_ipt_inter.txt" , "w");
-//static FILE *fp1 = fopen("debug_ipt_light.txt" , "w");
+static FILE *fp1 = fopen("debug_ipt_light.txt" , "w");
 static FILE *err = fopen("error_report.txt" , "w");
 static FILE *fm = fopen("mask.txt" , "w");
 
@@ -110,12 +112,11 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 			mergeRadius = r0 * powf(powf(max(base , 1.f) , alpha - 1.f) , 1.f / 2.f);
 			gatherRadius = gr0 * powf(powf(max(base , 1.f) , alpha - 1.f) , 1.f / 2.f);
 		}
-        // not reduce radius
-		//mergeRadius = r0;
+        
+		//mergeRadius = r0; // not reduce radius
 		mergeRadius = std::max(mergeRadius , 1e-7f);
 
-        // not reduce radius
-        //gatherRadius = gr0;
+        //gatherRadius = gr0; // not reduce radius
 		gatherRadius = std::max(gatherRadius , 1e-7f);
 
 		printf("mergeRadius = %.8f, gatherRadius = %.8f\n" , mergeRadius , gatherRadius);
@@ -203,8 +204,21 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 					continue;
 			}
 
+			if (!useUniformSur && showLightPhotons)
+			{
+				std::vector<vec3f> positions;
+				for (int i = 0; i < partialSubPathList.size(); i++)
+				{
+					if (partialSubPathList[i].ray->contactObject != NULL)
+						positions.push_back(partialSubPathList[i].pos);
+				}
+				renderPhotonMap(positions , "light_photons.pfm");
+			}
+
 			if (!usePPM)
+			{
 				genIntermediatePaths(cmdLock , interPathList);
+			}
 			
 			printf("lightPhotonNum = %d, partialPhotonNum = %d\n" , lightPhotonNum , partialPhotonNum);
 
@@ -212,6 +226,7 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 
 			PointKDTree<IptPathState> partialSubPaths(partialSubPathList);
 				
+			/*
 			for (int i = 0; i < partialPhotonNum; i++)
 			{
 				IptPathState& subPath = partialSubPathList[i];
@@ -220,32 +235,35 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 					vec3f contrib;
 					if (i < lightPhotonNum)
 					{
-						//contrib = subPath.throughput;
-						//fprintf(fp1 , "==============\n");
-						//fprintf(fp1 , "dirContrib=(%.8f,%.8f,%.8f), pathNum = %.1lf\n" , contrib.x , contrib.y , contrib.z , subPath.mergedPath);
+						contrib = subPath.throughput;
+						fprintf(fp1 , "==============\n");
+						fprintf(fp1 , "dirContrib=(%.8f,%.8f,%.8f), pathNum = %.1lf\n" , contrib.x , contrib.y , contrib.z , subPath.mergedPath);
 					}
 					else
 					{
 						contrib = subPath.indirContrib;
 						if (intensity(contrib) < 1e-6f)
 							continue;
-						//fprintf(fp , "==============\n");
-						//fprintf(fp , "indirContrib=(%.8f,%.8f,%.8f), pathNum = %.1lf\n" , contrib.x , contrib.y , contrib.z , subPath.mergedPath);
+						fprintf(fp , "==============\n");
+						fprintf(fp , "indirContrib=(%.8f,%.8f,%.8f), pathNum = %.1lf\n" , contrib.x , contrib.y , contrib.z , subPath.mergedPath);
 					}			
 				}
 			}
-
+			*/
 			double maxVar = 0.0;
 #pragma omp parallel for
             for (int p = 0; p < pixelNum; p++)
 			{
 				//fprintf(fp2 , "========== pixel id = %d ==========\n" , p);
 				//fprintf(fp3 , "========== pixel id = %d ==========\n" , p);
+
+				// disable ray marching
+				/*
                 for (int sid = 0; sid < samplesPerPixel; sid++)
                 {
                     Path eyePath;
-                    //Ray cameraRay = camera.generateRay(p , sid , samplesPerPixel);
-                    Ray cameraRay = camera.generateRay(p);
+                    Ray cameraRay = camera.generateRay(p , sid , samplesPerPixel);
+                    //Ray cameraRay = camera.generateRay(p);
                     sampleMergePath(eyePath , cameraRay , 0);
                     singleImageColors[p] += colorByRayMarching(eyePath , partialSubPaths , p);
 
@@ -253,7 +271,98 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 					//maxVar = max(vars[p] , maxVar);
                 }
                 singleImageColors[p] /= (float)samplesPerPixel;
-				// abandon all the rest!
+				*/
+				
+				Path eyePath;
+				Ray cameraRay = camera.generateRay(p);
+				samplePath(eyePath, cameraRay, false);
+				if (eyePath.size() <= 1)
+					continue;
+
+				IptPathState cameraState;
+				bool lastSpecular = 1;
+				Real lastPdfW = 1.f;
+
+				cameraState.throughput = vec3f(1.f) / (eyePath[0].originProb * eyePath[0].directionProb * eyePath[1].originProb);
+
+				cameraState.index = eyePath.front().pixelID;
+
+				//fprintf(fp , "===================\n");
+				//for (int i = 0; i < eyePath.size(); i++)
+				//{
+				//	fprintf(fp , "l=%d, bsdf=(%.8f,%.8f,%.8f), originPdf=%.8f, dirPdf=%.8f\n" , i , eyePath[i].color.x ,
+				//		eyePath[i].color.y , eyePath[i].color.z , eyePath[i].originProb , eyePath[i].directionProb);
+				//}
+
+				vec3f colorHitLight(0.f);
+
+				for(unsigned i = 1; i < eyePath.size(); i++)
+				{
+					vec3f colorGlbIllu(0.f) , colorDirIllu(0.f);
+
+					Real dist = std::max((eyePath[i].origin - eyePath[i - 1].origin).length() , 1e-5f);
+					cameraState.throughput *= eyePath[i - 1].getRadianceDecay(dist);
+
+					if (eyePath[i].contactObject && eyePath[i].contactObject->emissive())
+					{
+						vec3f contrib = ((SceneEmissiveObject*)(eyePath[i].contactObject))->getColor();
+						float dirPdfA = eyePath[i].contactObject->getEmissionWeight() / eyePath[i].contactObject->totalArea;
+						float mis = 1.f;
+						if (i > 1 && !lastSpecular)
+						{
+							float cosine = eyePath[i].getContactNormal().dot(-eyePath[i - 1].direction);
+							float dist = (eyePath[i].origin - eyePath[i - 1].origin).length();
+							float dirPdfW = dirPdfA * dist * dist / abs(cosine);
+							mis = lastPdfW / (lastPdfW + dirPdfW);
+
+							//fprintf(fp , "==================\n");
+							//fprintf(fp , "thr=(%.6f,%.6f,%.6f), contrib=(%.6f,%.6f,%.6f), pdfA=%.6f, pdfW=%.6f, lastPdfW=%.6f, cosine=%.6f, mis=%.6f\n" , 
+							//	cameraState.throughput[0] , cameraState.throughput[1] , cameraState.throughput[2] , contrib[0] ,
+							//	contrib[1] , contrib[2] , dirPdfA , dirPdfW , lastPdfW , cosine , mis);
+
+						}
+
+						colorHitLight = cameraState.throughput * contrib;
+
+						singleImageColors[cameraState.index] += colorHitLight;
+
+						break;
+					}
+
+					cameraState.pos = eyePath[i].origin;
+					cameraState.lastRay = &eyePath[i - 1];
+					cameraState.ray = &eyePath[i];
+
+					if (eyePath[i].directionSampleType == Ray::RANDOM)
+					{
+						// mis with colorHitLight
+						//colorDirIllu = colorByConnectingLights(eyePath[i - 1] , eyePath[i]) * cameraState.throughput;
+
+						colorGlbIllu = colorByMergingPaths(cameraState , partialSubPaths);
+						
+						singleImageColors[cameraState.index] += colorGlbIllu;
+
+						break;
+					}
+
+					lastSpecular = (eyePath[i].directionSampleType == Ray::DEFINITE);
+					lastPdfW = eyePath[i].directionProb;
+
+					if (eyePath[i].direction.length() < 0.5f)
+						break;
+
+					if (i >= eyePath.size() - 1)
+						break;
+
+					cameraState.throughput *= (eyePath[i].color * eyePath[i].getCosineTerm()) / 
+						(eyePath[i + 1].originProb * eyePath[i].directionProb);
+
+					//fprintf(fp , "l=%d, thr=(%.8f,%.8f,%.8f), bsdf=(%.8f,%.8f,%.8f), cos=%.8f, prob=%.8f\n" , 
+					//	i , cameraState.throughput[0] , cameraState.throughput[1] , cameraState.throughput[2] ,
+					//	bsdfFactor[0] , bsdfFactor[1] , bsdfFactor[2] , eyePath[i].getCosineTerm() , eyePath[i].directionProb);
+				}
+
+				// try eye path length >= 1
 				/*
 				samplePath(eyePath, camera.generateRay(p));
 				if (eyePath.size() <= 1)
@@ -464,12 +573,12 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 		}
 
 		//if (clock() / 1000 >= lastTime)
-		if (s % outputIter == 0 && !isDebug)
+		unsigned nowTime = (unsigned)timer.GetElapsedTime(0);
+		if (nowTime >= lastTime && !isDebug)
 		{
-			unsigned nowTime = (unsigned)timer.GetElapsedTime(0);
 			showCurrentResult(pixelColors , &nowTime , &s);
 			//showCurrentResult(pixelColors , &lastTime , &s);
-			//lastTime += timeInterval;
+			lastTime += timeStep;
 		}
 		else
 			showCurrentResult(pixelColors);
@@ -790,7 +899,7 @@ void IptTracer::genIntermediatePaths(omp_lock_t& cmdLock , vector<Path*>& interP
 {
 	// preprocess
 	vector<IptPathState> lightSubPathList(partialSubPathList);
-    PointKDTree<IptPathState> tree(lightSubPathList);
+    //PointKDTree<IptPathState> tree(lightSubPathList);
 	int N = lightSubPathList.size();
 	weights.resize(N + 1 , 0);
 	for (int i = 0; i < N; i++)
@@ -802,20 +911,30 @@ void IptTracer::genIntermediatePaths(omp_lock_t& cmdLock , vector<Path*>& interP
 			totVol < 1e-7f)
 			volScale = 1.f;
 
-		//weights[i + 1] = weights[i] + intensity * intensity * volScale;
-		weights[i + 1] = weights[i] + volScale;
+		weights[i + 1] = weights[i] + intensity * intensity * volScale;
+		//weights[i + 1] = weights[i] + volScale;
 	}
 	float sum = weights[N];
 	for (int i = 0; i <= N; i++)
 		weights[i] /= sum;
+
+	std::vector<vec3f> positions;
 
 #pragma omp parallel for
 	for(int p=0; p<interPathNum; p++)
 	{
 		if (!renderer->scene.usingGPU())
 		{
-			//Ray interRay = genIntermediateSamples(renderer->scene);
-			Ray interRay = genIntermediateSamplesByPhotons(lightSubPathList , tree , renderer->scene , &p);
+			Ray interRay = genIntermediateSamples(renderer->scene);
+			//Ray interRay = genIntermediateSamplesByPhotons(lightSubPathList , tree , renderer->scene , &p);
+			
+			if (showInterPhotons)
+			{
+				omp_set_lock(&cmdLock);
+				positions.push_back(interRay.origin);
+				omp_unset_lock(&cmdLock);
+			}
+			
 			interPathList[p] = new Path;
 			samplePath(*interPathList[p] , interRay , true);
 		}
@@ -950,6 +1069,11 @@ void IptTracer::genIntermediatePaths(omp_lock_t& cmdLock , vector<Path*>& interP
 	}
 
 	partialPhotonNum = partialSubPathList.size();
+
+	if (showInterPhotons)
+	{
+		renderPhotonMap(positions , "inter_photons.pfm");
+	}
 }
 
 void IptTracer::mergePartialPaths(omp_lock_t& cmdLock)
@@ -1752,7 +1876,8 @@ void IptTracer::sampleMergePath(Path &path, Ray &prevRay, uint depth)
 	terminateRay.insideObject =	terminateRay.contactObject = terminateRay.intersectObject = NULL;
 
 	Ray nextRay;
-	if (prevRay.insideObject && !prevRay.insideObject->isVolumetric())
+	//if (prevRay.insideObject && !prevRay.insideObject->isVolumetric()) 
+	if (prevRay.insideObject && prevRay.insideObject->isVolumetric()) // modified 2015.05.21
 	{
 		nextRay = prevRay.insideObject->scatter(prevRay , false , true);
 	}
@@ -1775,7 +1900,7 @@ void IptTracer::sampleMergePath(Path &path, Ray &prevRay, uint depth)
 		}
 	}
 
-	if (nextRay.direction.length() > 0.5 && nextRay.contactObject != NULL)
+	if (nextRay.direction.length() > 0.5 && nextRay.insideObject == NULL && nextRay.contactObject != NULL)
 	{
 		vec3f geoN = nextRay.getContactNormal(false);
 		vec3f shdN = nextRay.getContactNormal(true);
@@ -1831,4 +1956,104 @@ void IptTracer::sampleMergePath(Path &path, Ray &prevRay, uint depth)
 		nextRay.intersectDist = dist;
 	}
 	sampleMergePath(path, nextRay, depth + 1);
+}
+
+void IptTracer::renderPhotonMap(std::vector<vec3f>& positions , const char* fileName)
+{
+	Camera& camera = renderer->camera;
+	IplImage* image = cvCreateImage(cvSize(camera.width, camera.height), IPL_DEPTH_32F, 3);
+	vector<vec3f> eyeRays = camera.generateRays();
+	std::vector<Colormap::color> colors;
+	int numBins = 8;
+	Colormap::colormapHeatColor(numBins , colors);
+
+	std::vector<float> photonDens(camera.width * camera.height);
+	for (int i = 0; i < positions.size(); i++)
+	{
+		class SmoothNormal : public KDTree::Condition
+		{
+		public:
+			Scene* scene;
+			virtual bool legal(const KDTree::Ray& ray, const KDTree::Triangle& tri, const float dist) const
+			{
+				SceneObject *intersectObject = scene->objects[((Scene::ObjSourceInformation*)tri.sourceInformation)->objID];
+				unsigned fi = ((Scene::ObjSourceInformation*)tri.sourceInformation)->triangleID;
+				bool in = ray.direction.dot(intersectObject->getWorldNormal(fi, ray.origin + ray.direction*dist, flatNormals))<0;
+				return in;
+			}
+		} condition;
+
+		vec2<float> pCoord = camera.transToPixel(positions[i]);
+		int x = pCoord.x;
+		int y = pCoord.y;
+
+		if(!(x >= 0 && x < camera.width && y >= 0 && y < camera.height)) continue;
+		
+		condition.scene = &renderer->scene;
+		Ray ray;
+		ray.origin = camera.position;
+		ray.direction = positions[i] - ray.origin;
+		float length = ray.direction.length();
+		ray.direction /= length;
+		Scene::ObjSourceInformation osi;
+		float dist = renderer->scene.intersect(ray, osi, &condition);
+		if (std::abs(dist - length) < 1e-6f)
+		{
+			photonDens[y * camera.width + x] += 1.f;
+		}
+	}
+
+	float maxDensity = *std::max_element(photonDens.begin() , photonDens.end());
+
+// 	fprintf(fp , "max = %.1f\n" , maxDensity);
+// 	for (int y = 0; y < camera.height; y++)
+// 	{
+// 		for (int x = 0; x < camera.width; x++)
+// 		{
+// 			fprintf(fp , "%.1f " , photonDens[y * camera.width + x]);
+// 		}
+// 		fprintf(fp , "\n");
+// 	}
+
+#pragma omp parallel for
+	for(int x=0; x<camera.width; x++)
+	{
+		class SmoothNormal : public KDTree::Condition
+		{
+		public:
+			Scene* scene;
+			virtual bool legal(const KDTree::Ray& ray, const KDTree::Triangle& tri, const float dist) const
+			{
+				SceneObject *intersectObject = scene->objects[((Scene::ObjSourceInformation*)tri.sourceInformation)->objID];
+				unsigned fi = ((Scene::ObjSourceInformation*)tri.sourceInformation)->triangleID;
+				bool in = ray.direction.dot(intersectObject->getWorldNormal(fi, ray.origin + ray.direction*dist, flatNormals))<0;
+				return in;
+			}
+		} condition;
+		for(unsigned y=0; y<camera.height; y++)
+		{
+			condition.scene = &renderer->scene;
+			Ray ray;
+			ray.direction = eyeRays[y*camera.width + x];
+			ray.origin = camera.position;
+			Scene::ObjSourceInformation osi;
+			float dist = renderer->scene.intersect(ray, osi, &condition);
+			vec3f normal = dist >= 0 ? renderer->scene.objects[osi.objID]->getWorldNormal(osi.triangleID, ray.origin + ray.direction*dist, flatNormals) : vec3f(0, 0, 0);
+			SceneObject *obj = renderer->scene.objects[osi.objID];
+			//if (dist >= 0 && obj->canMerge && !obj->isVolumetric() && !obj->emissive() &&
+			//	obj->energyDensity[osi.triangleID] > 0)
+// 			if (photonDens[y * camera.width + x] > 0)
+ 			{
+				int level = (int)(powf((maxDensity - photonDens[y * camera.width + x]) / (maxDensity) , 2) * numBins);
+				level = clamp(level , 0 , numBins - 1);
+				((vec3f*)image->imageData)[y*camera.width + x] = vec3f(colors[level].b, colors[level].g, colors[level].r);
+			}
+// 			else
+// 			{
+// 				((vec3f*)image->imageData)[y*camera.width + x] = vec3f(1, 1, 1) * abs(ray.direction.dot(normal));
+// 			}
+		}
+	}
+	saveImagePFM(fileName , image);
+	cvReleaseImage(&image);
 }
