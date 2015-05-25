@@ -471,21 +471,22 @@ void MCRenderer::showCurrentResult(const vector<vec3f>& pixelColors , unsigned* 
         sprintf(iterStr , "%d" , *iter);
 		//itoa(*time , timeStr , 10);
 		//itoa(*iter , iterStr , 10);
-		string fileName("");
-		for (int i = 0; i < savePath.length(); i++)
+		string fileName(savePath);
+		for (int i = savePath.length() - 1; i >= 0; i--)
 		{
+			fileName.pop_back();
 			if (savePath[i] == '.')
 				break;
-			fileName.push_back(savePath[i]);
 		}
-		fileName += "_iter_";
-		for (int i = 0; i < strlen(iterStr); i++)
-			fileName.push_back(iterStr[i]);
 		fileName += "_time_";
 		for (int i = 0; i < strlen(timeStr); i++)
 			fileName.push_back(timeStr[i]);
+		fileName += "_iter_";
+		for (int i = 0; i < strlen(iterStr); i++)
+			fileName.push_back(iterStr[i]);
 		fileName += ".pfm";
 		saveImagePFM(fileName , image);
+		//printf("savePath = %s\n" , fileName.c_str());
 	}
 
 	for(int p=0; p<3*image->width*image->height; p++)

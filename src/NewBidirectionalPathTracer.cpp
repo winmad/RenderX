@@ -168,12 +168,14 @@ vector<vec3f> NewBidirectionalPathTracer::renderPixels(const Camera& camera)
 
 			printf("Iter: %d  IterTime: %lus  TotalTime: %lus\n", s+1, (clock()-t)/1000, (clock()-t_start)/1000);
 
-			if (clock() / 1000 >= lastTime)
-			{
-				showCurrentResult(pixelColors , &lastTime);
-				lastTime += timeInterval;
-			}
-			else
+// 			unsigned nowTime = (unsigned)timer.GetElapsedTime(0);
+// 			if (nowTime >= lastTime && !isDebug)
+// 			{
+// 				showCurrentResult(pixelColors , &nowTime , &s);
+// 				//showCurrentResult(pixelColors , &lastTime , &s);
+// 				lastTime += timeStep;
+// 			}
+// 			else
 				showCurrentResult(pixelColors);
 		}
 	}

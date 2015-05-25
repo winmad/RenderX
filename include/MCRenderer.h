@@ -58,6 +58,7 @@ protected:
 
 	TimeManager timer;
     double runtime;
+	double timeStep , lastTime;
     
 	vector<Ray> showPath;
 
@@ -130,6 +131,8 @@ public:
 		pathPixelID = -1;
 		useMerge = false;
 		outputIter = 5;
+		timeStep = 300;
+		lastTime = 300;
 	}
 
 	virtual void preprocess(){}

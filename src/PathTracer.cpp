@@ -62,12 +62,12 @@ vector<vec3f> PathTracer::renderPixels(const Camera& camera)
 				timer.GetElapsedTime(0));
 
 			//if (clock() / 1000 >= lastTime)
-			if (s % outputIter == 0 && !isDebug)
+			unsigned nowTime = (unsigned)timer.GetElapsedTime(0);
+			if (nowTime >= lastTime && !isDebug)
 			{
-				unsigned nowTime = (unsigned)timer.GetElapsedTime(0);
 				showCurrentResult(pixelColors , &nowTime , &s);
 				//showCurrentResult(pixelColors , &lastTime , &s);
-				//lastTime += timeInterval;
+				lastTime += timeStep;
 			}
 			else
 				showCurrentResult(pixelColors);
@@ -163,12 +163,12 @@ vector<vec3f> PathTracer::renderPixels(const Camera& camera)
 				timer.GetElapsedTime(0));
 
 			//if (clock() / 1000 >= lastTime)
-			if (s % outputIter == 0 && !isDebug)
+			unsigned nowTime = (unsigned)timer.GetElapsedTime(0);
+			if (nowTime >= lastTime && !isDebug)
 			{
-				unsigned nowTime = (unsigned)timer.GetElapsedTime(0);
 				showCurrentResult(pixelColors , &nowTime , &s);
 				//showCurrentResult(pixelColors , &lastTime , &s);
-				//lastTime += timeInterval;
+				lastTime += timeStep;
 			}
 			else
 				showCurrentResult(pixelColors);

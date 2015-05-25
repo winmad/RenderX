@@ -78,6 +78,8 @@ protected:
 
 	void sampleMergePath(Path &path, Ray &prevRay, uint depth);
 
+	void renderPhotonMap(std::vector<vec3f>& positions , const char* fileName);
+
 public:
 	Real mergeRadius;
 	Real gatherRadius;
@@ -87,10 +89,10 @@ public:
 	Real alpha;
 	Real totArea , totVol;
 	Real mergeRatio;
-	unsigned timeInterval , lastTime;
 	bool useWeight , usePPM , useDirIllu , useRayMarching , checkCycle;
 	bool useUniformInterSampler , useUniformSur , useUniformVol , useUniformDir;
 	bool useConstantKernel;
+	bool showLightPhotons , showInterPhotons;
 
 	int pixelNum , lightPathNum , cameraPathNum , interPathNum , partialPathNum;
 	int totPathNum;
@@ -101,7 +103,6 @@ public:
 		alpha = 2.f / 3.f;
 		spp = -1; 
 		mergeRatio = 1.f;
-		timeInterval = lastTime = 3600;
 		gatherRadius = 0.f;
 		pathRatio = 0.5f;
 		outputIter = 5;
@@ -118,6 +119,9 @@ public:
 		useUniformDir = false;
 
 		useConstantKernel = true;
+
+		showLightPhotons = false;
+		showInterPhotons = false;
 
 		checkCycle = true;
 		checkCycleIters = 100;
