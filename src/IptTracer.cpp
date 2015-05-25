@@ -1775,7 +1775,7 @@ void IptTracer::sampleMergePath(Path &path, Ray &prevRay, uint depth)
 		}
 	}
 
-	if (nextRay.direction.length() > 0.5 && nextRay.contactObject != NULL)
+	if (nextRay.direction.length() > 0.5 && nextRay.insideObject == NULL && nextRay.contactObject != NULL)
 	{
 		vec3f geoN = nextRay.getContactNormal(false);
 		vec3f shdN = nextRay.getContactNormal(true);

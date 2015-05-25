@@ -81,7 +81,7 @@ Ray SceneVPMObject::scatter(const Ray& inRay, const bool fixIsLight, const bool 
 			}
 			else
 			{
-				//if (!fixIsLight) outRay.color *= (current_n * current_n) / (next_n * next_n);
+				if (!fixIsLight) outRay.color *= (current_n * current_n) / (next_n * next_n);
 				//printf("go in: %.6f/%.6f\n" , current_n , next_n);
 				outRay.color *= (1-er) / outRay.getCosineTerm();
 				outRay.directionProb = 1-p;
@@ -216,7 +216,7 @@ Ray SceneVPMObject::scatter(const Ray& inRay, const bool fixIsLight, const bool 
 				}
 				else
 				{
-					//if (!fixIsLight) outRay.color *= (current_n * current_n) / (next_n * next_n);
+					if (!fixIsLight) outRay.color *= (current_n * current_n) / (next_n * next_n);
 					//printf("go out: %.6f/%.6f\n" , current_n , next_n);
 					outRay.color *= (1-er) / outRay.getCosineTerm();
 					outRay.directionProb = (1-p);
