@@ -49,7 +49,7 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 	varColors.resize(camera.width * camera.height , vec3f(0, 0, 0));
 
 	vector<omp_lock_t> pixelLocks(pixelColors.size());
-	volMask.resize(camera.width * camera.height);
+	volMask.resize(camera.width * camera.height , true);
 
 	preprocessEmissionSampler();
 	preprocessOtherSampler(useUniformSur);
@@ -325,6 +325,8 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 						colorHitLight = cameraState.throughput * contrib;
 
 						singleImageColors[cameraState.index] += colorHitLight;
+
+						volMask[cameraState.index] = false;
 
 						break;
 					}

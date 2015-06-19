@@ -83,6 +83,7 @@ void Compare(IplImage *img1, IplImage *img2, IplImage *ref){
 double CalculateRMSE(IplImage *img1, IplImage *ref){
 	int width = ref->width, height = ref->height;
 	std::vector<double> var1(width*height);
+	IplImage *rst1 = cvCreateImage(cvSize(width, height), IPL_DEPTH_32F, 3);
 
 	double TotalVar1 = 0;
 	int count = 0;
@@ -108,7 +109,17 @@ double CalculateRMSE(IplImage *img1, IplImage *ref){
 		}
 	}
 
-	double Var1 = sqrt(TotalVar1 / (count));
+	for(int x = 0; x < width; x++){
+		for(int y = 0; y < height; y++){
+			vec3f &var1C = ((vec3f*)rst1->imageData)[y*width + x];
+
+			vec3f RGB = convertLuminanceToRGB((double)var1[y*width+x]);
+			var1C = vec3f(255*RGB.z, 255*RGB.y, 255*RGB.x);
+		}
+	}
+	cvSaveImage("rst1.jpg" , rst1);
+
+	double Var1 = sqrt(TotalVar1 / double(count));
 	return Var1;
 }
 
@@ -154,7 +165,8 @@ struct Data
 	bool operator <(const Data& rhs)
 	{
 		//return iter < rhs.iter;
-		return rmse < rhs.rmse;
+		return time < rhs.time;
+		//return rmse < rhs.rmse;
 	}
 };
 
@@ -229,14 +241,17 @@ void calcRMSE_cb()
 
 void calcRMSEs(int argc, char* argv[])
 {
-    /*
+	printf("%s\n%s\n%s\n" , argv[1] , argv[2] , argv[3]); 
 	_finddata_t file;
 	long flag;
-	string root = "D:\\Winmad\\RendererGPU\\Release\\Data\\results\\vol_ipt_6_29\\";
-	flag = _findfirst("D:\\Winmad\\RendererGPU\\Release\\Data\\results\\vol_ipt_6_29\\*.pfm" , &file);
-	FILE *fp = fopen("result_vol_ipt_6_29.txt" , "w");
+	//string root = "D:\\Winmad\\RendererGPU\\Release\\Data\\results\\vol_ipt_6_29\\";
+	string root(argv[1]);
+	string filenames = root + "*.pfm";
+	//flag = _findfirst("D:\\Winmad\\RendererGPU\\Release\\Data\\results\\vol_ipt_6_29\\*.pfm" , &file);
+	flag = _findfirst(filenames.c_str() , &file);
+	FILE *fp = fopen(argv[3] , "w");
 
-	IplImage *ref = convert_to_float32(readImagePFM("D:\\Winmad\\RendererGPU\\Release\\Data\\results\\vol_ref_10w.pfm"));
+	IplImage *ref = convert_to_float32(readImagePFM(argv[2]));
 
 	volMask.resize(ref->height * ref->width);
 	for (int i = 0; i < ref->height * ref->width; i++)
@@ -244,7 +259,8 @@ void calcRMSEs(int argc, char* argv[])
 
 	if (argc >= 5)
 	{
-		FILE *fm = fopen(argv[4] , "r");
+		string mask_filename(argv[4]);
+		FILE *fm = fopen(mask_filename.c_str() , "r");
 		for (int y = ref->height - 1; y >= 0; y--)
 		{
 			for (int x = 0; x < ref->width; x++)
@@ -308,18 +324,20 @@ void calcRMSEs(int argc, char* argv[])
 	sort(data.begin() , data.end());
 	for (int i = 0; i < data.size(); i++)
 	{
-		fprintf(fp , "%d %d %.8lf\n" , data[i].iter , data[i].time , data[i].rmse);
+		fprintf(fp , "%d %.8lf\n" , data[i].time , data[i].rmse);
 	}
 	fclose(fp);
 	_findclose(flag);
-    */
 }
-/*
-int main(int argc, char* argv[])
-{
-	// cmpTwoImages(argc , argv);
-	// calcRMSEs(argc , argv);
-	calcRMSE_cb();
-	return 0;
-}
-*/
+
+// int main(int argc, char* argv[])
+// {
+// 	// cmpTwoImages(argc , argv);
+// 
+// 	// calc_RMSE <input_dir> <ref_img> <output_file> [<mask_file>]
+// 	calcRMSEs(argc , argv); 
+// 	
+// 	// calcRMSE_cb();
+// 	return 0;
+// }
+
