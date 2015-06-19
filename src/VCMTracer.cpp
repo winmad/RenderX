@@ -18,7 +18,6 @@ vector<vec3f> VCMTracer::renderPixels(const Camera& camera)
 		omp_init_lock(&pixelLocks[i]);
 	}
 
-	omp_lock_t cmdLock;
 	omp_init_lock(&cmdLock);
 
 	float r0 = mergeRadius;
@@ -43,6 +42,8 @@ vector<vec3f> VCMTracer::renderPixels(const Camera& camera)
 
 			vector<LightPathPoint> lppList;
 
+			numEyePathsPerPixel = 0;
+			numFullPathsPerPixel = 0;
 #pragma omp parallel for
 			for(int p=0; p<pixelColors.size(); p++)
 			{
@@ -121,6 +122,9 @@ vector<vec3f> VCMTracer::renderPixels(const Camera& camera)
 				pixelColors[i] += singleImageColors[i] / (s + 1);//*camera.width*camera.height;
 				delete lightPathList[i];
 			}
+
+			printf("AvgPathSamplesPerPixel = %.6f\n" , numFullPathsPerPixel / (double)pixelColors.size());
+			printf("AvgPathSamplesPerEyePath = %.6f\n" , numFullPathsPerPixel / numEyePathsPerPixel);
 			printf("Iter: %d  IterTime: %.3lfs  TotalTime: %.3lfs\n", s+1, timer.PopCurrentTime(), 
 				timer.GetElapsedTime(0));
 
@@ -212,6 +216,7 @@ vector<vec3f> VCMTracer::renderPixels(const Camera& camera)
 				pixelColors[i] *= s / float(s + 1);
 				pixelColors[i] += singleImageColors[i] / (s + 1);//*camera.width*camera.height;
 			}
+
 			printf("Iter: %d  IterTime: %.3lfs  TotalTime: %.3lfs\n", s+1, timer.PopCurrentTime(), 
 				timer.GetElapsedTime(0));
 
@@ -428,6 +433,10 @@ void VCMTracer::colorByConnectingPaths(vector<omp_lock_t> &pixelLocks, const Cam
 	unsigned maxLightPathLen = lightPath.size();
 	unsigned maxWholePathLen = maxEyePathLen + maxLightPathLen;
 
+	omp_set_lock(&cmdLock);
+	numEyePathsPerPixel += maxEyePathLen;
+	omp_unset_lock(&cmdLock);
+
 	for(int wholePathLen=2; wholePathLen<=maxWholePathLen; wholePathLen++)
 	{
 
@@ -544,6 +553,10 @@ void VCMTracer::colorByConnectingPaths(vector<omp_lock_t> &pixelLocks, const Cam
 					omp_unset_lock(&pixelLocks[y*camera.width + x]);
 				}
 			}
+
+			omp_set_lock(&cmdLock);
+			numFullPathsPerPixel += 1;
+			omp_unset_lock(&cmdLock);
 		}
 	}
 }
@@ -614,6 +627,11 @@ void VCMTracer::colorByMergingPaths(vector<vec3f>& colors, const Path& eyePath, 
 		//	fprintf(fp , "===================\n");
 
 		colors[eyePath.front().pixelID] += query.color / (float)(renderer->camera.height * renderer->camera.width);
+
+		omp_set_lock(&cmdLock);
+		numEyePathsPerPixel += 1;
+		numFullPathsPerPixel += query.cnt;
+		omp_unset_lock(&cmdLock);
 	}
 }
 

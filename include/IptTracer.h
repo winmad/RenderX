@@ -1,6 +1,5 @@
 #pragma once
 #include "mcrenderer.h"
-#include <omp.h>
 #include <stack>
 #include <utility>
 #include <queue>
@@ -328,6 +327,7 @@ struct GatherQuery
 		}
 
 		color += res;
+		mergeNum += lightState.mergedPath;
 		/*
 		if (cameraState->ray->insideObject)
 		{
