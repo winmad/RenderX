@@ -37,9 +37,9 @@ inline IplImage *readImagePFM(const string& fileName)
 			fread((float*)&data[3*(j*img->width+i)+2], sizeof(float), 1, file);
 			fread((float*)&data[3*(j*img->width+i)+1], sizeof(float), 1, file);
 			fread((float*)&data[3*(j*img->width+i)], sizeof(float), 1, file);
-			data[3*(j*img->width+i)+2] = clampf(data[3*(j*img->width+i)+2] , 0.f , 1.f);
-			data[3*(j*img->width+i)+1] = clampf(data[3*(j*img->width+i)+1] , 0.f , 1.f);
-			data[3*(j*img->width+i)] = clampf(data[3*(j*img->width+i)] , 0.f , 1.f);
+			data[3*(j*img->width+i)+2] = clampf(data[3*(j*img->width+i)+2] , 0.f , 4.f);
+			data[3*(j*img->width+i)+1] = clampf(data[3*(j*img->width+i)+1] , 0.f , 4.f);
+			data[3*(j*img->width+i)] = clampf(data[3*(j*img->width+i)] , 0.f , 4.f);
 		}
 	}
 

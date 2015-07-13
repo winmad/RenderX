@@ -66,7 +66,7 @@ void SimpleShape::loadShape(const string &fileName, bool normalize, vector<Simpl
 	{
 		char line[BUFFERSIZE];
 		char attrib[BUFFERSIZE];
-		char parms[3][BUFFERSIZE];
+		char parms[4][BUFFERSIZE];
 		FILE* file;
 		file = fopen(fileName.c_str(),"r");
 
@@ -81,6 +81,7 @@ void SimpleShape::loadShape(const string &fileName, bool normalize, vector<Simpl
 			if(line[0] == '#')
 				continue;
 			int num = sscanf(line,"%s %s %s %s",attrib,parms[0],parms[1],parms[2]);
+			int num_rect = sscanf(line,"%s %s %s %s %s",attrib,parms[0],parms[1],parms[2],parms[3]);
 
 			if(strcmp("g",attrib)==0 && split)
 			{
@@ -95,7 +96,83 @@ void SimpleShape::loadShape(const string &fileName, bool normalize, vector<Simpl
 				current_fti = vertexTexCoordList.size();
 			}
 
-			if(num!=4)
+			if(strcmp("f",attrib)==0 && num_rect==5)
+			{
+				int tri[4], vnTri[4], tTri[4];
+				vec3ui sub_tri, sub_vnTri, sub_tTri;
+				bool has_n = false;
+				bool has_t = false;
+
+				ret = sscanf(parms[0],"%d/%d/%d",&tri[0],&tTri[0],&vnTri[0]);
+				ret = sscanf(parms[1],"%d/%d/%d",&tri[1],&tTri[1],&vnTri[1]);
+				ret = sscanf(parms[2],"%d/%d/%d",&tri[2],&tTri[2],&vnTri[2]);
+				ret = sscanf(parms[3],"%d/%d/%d",&tri[3],&tTri[3],&vnTri[3]);
+
+				if(ret==1)
+				{
+					ret = sscanf(parms[0],"%d//%d",&tri[0],&vnTri[0]);
+					ret = sscanf(parms[1],"%d//%d",&tri[1],&vnTri[1]);
+					ret = sscanf(parms[2],"%d//%d",&tri[2],&vnTri[2]);
+					ret = sscanf(parms[3],"%d//%d",&tri[3],&vnTri[3]);
+					has_n = ret == 2;
+
+					if (ret == 1)
+					{
+						ret = sscanf(parms[0],"%d",&tri[0]);
+						ret = sscanf(parms[1],"%d",&tri[1]);
+						ret = sscanf(parms[2],"%d",&tri[2]);
+						ret = sscanf(parms[3],"%d",&tri[3]);
+						has_n = false;
+					}		
+				}
+				else
+				{
+					has_n = ret == 3;
+					has_t = ret >= 2;
+				}
+
+				for (int i = 0; i < 4; i++)
+				{
+					tri[i] -= 1;
+					vnTri[i] -= 1;
+					tTri[i] -= 1;
+				}
+				sub_tri = vec3ui(tri[0], tri[1], tri[2]);
+				faceVertexIndexList.push_back(sub_tri);
+				sub_tri = vec3ui(tri[0], tri[2], tri[3]);
+				faceVertexIndexList.push_back(sub_tri);
+				if(split && shape)
+				{
+					/* not dealt with!! */
+					//shape->faceVertexIndexList.push_back(tri - vec3ui(current_fi, current_fi, current_fi));
+				}
+				if(has_n)
+				{
+					sub_vnTri = vec3ui(vnTri[0], vnTri[1], vnTri[2]);
+					faceVertexNormalIndexList.push_back(sub_vnTri);
+					sub_vnTri = vec3ui(vnTri[0], vnTri[2], vnTri[3]);
+					faceVertexNormalIndexList.push_back(sub_vnTri);
+					if(split && shape)
+					{
+						/* not dealt with!! */
+						//shape->faceVertexNormalIndexList.push_back(vnTri - vec3ui(current_fni, current_fni, current_fni));
+					}
+				}
+				if(has_t)
+				{
+					sub_tTri = vec3ui(tTri[0], tTri[1], tTri[2]);
+					faceVertexTexCoordIndexList.push_back(sub_tTri);
+					sub_tTri = vec3ui(tTri[0], tTri[2], tTri[3]);
+					faceVertexTexCoordIndexList.push_back(sub_tTri);
+					if(split && shape)
+					{
+						/* not dealt with!! */
+						//shape->faceVertexTexCoordIndexList.push_back(tTri - vec3ui(current_fti, current_fti, current_fti));
+					}
+				}
+				continue;
+			}
+			if (num!=4)
 				continue;
 			if(strcmp("v",attrib)==0)
 			{
@@ -216,8 +293,22 @@ void SimpleShape::loadShape(const string &fileName, bool normalize, vector<Simpl
 				printf("%.6f " , trans.element(i , j));
 			printf("\n");
 		}
-		
 	}
+	else
+	{
+// 		matrix4<float> changeHandness;
+// 		changeHandness.set_scale(vec3f(1.f , 1.f , 1.f));
+// 		matrix4<float> trans;
+// 		trans = changeHandness * transform;
+// 		printf("=================\n");
+// 		for (int i = 0; i < 4; i++)
+// 		{
+// 			for (int j = 0; j < 4; j++)
+// 				printf("%.6f " , trans.element(i , j));
+// 			printf("\n");
+// 		}
+	}
+	
 	getBoundingBox(minCoord, maxCoord);
 }
 

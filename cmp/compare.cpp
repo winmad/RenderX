@@ -330,14 +330,14 @@ void calcRMSEs(int argc, char* argv[])
 	_findclose(flag);
 }
 
-// int main(int argc, char* argv[])
-// {
-// 	// cmpTwoImages(argc , argv);
-// 
-// 	// calc_RMSE <input_dir> <ref_img> <output_file> [<mask_file>]
-// 	calcRMSEs(argc , argv); 
-// 	
-// 	// calcRMSE_cb();
-// 	return 0;
-// }
+int main(int argc, char* argv[])
+{
+	// cmpTwoImages(argc , argv);
+
+	// calc_RMSE <input_dir> <ref_img> <output_file> [<mask_file>]
+	calcRMSEs(argc , argv); 
+	
+	// calcRMSE_cb();
+	return 0;
+}
 

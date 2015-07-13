@@ -58,13 +58,15 @@ void Renderer::waitForCommand(const string& filename)
 #else
 	loadConfig(filename);
 #endif
-	//while (key != 'q')
-	//{
-	//	preview();
-	//	key = cvWaitKey(10);
-	//}
-	//cvDestroyAllWindows();
+// 	while (key != 'q')
+// 	{
+// 		preview();
+// 		key = cvWaitKey(10);
+// 	}
+// 	cvDestroyAllWindows();
+	
 	render();
+	
 	/*
 	while(key != 'q')
 	{

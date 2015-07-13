@@ -21,3 +21,5 @@ typedef vec3<double> vec3d;
 
 // false: use shading normal, true: use geometric normal
 const bool flatNormals = false;
+
+const bool useRussian = false;

@@ -60,7 +60,6 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 		omp_init_lock(&pixelLocks[i]);
 	}
 
-	omp_lock_t cmdLock;
 	omp_init_lock(&cmdLock);
 
 	if (gatherRadius < 1e-6f)
@@ -251,6 +250,10 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 			}
 			*/
 			double maxVar = 0.0;
+
+			numEyePathsPerPixel = 0;
+			numFullPathsPerPixel = 0;
+
 #pragma omp parallel for
             for (int p = 0; p < pixelNum; p++)
 			{
@@ -306,27 +309,30 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 					if (eyePath[i].contactObject && eyePath[i].contactObject->emissive())
 					{
 						vec3f contrib = ((SceneEmissiveObject*)(eyePath[i].contactObject))->getColor();
-						float dirPdfA = eyePath[i].contactObject->getEmissionWeight() / eyePath[i].contactObject->totalArea;
-						float mis = 1.f;
-						if (i > 1 && !lastSpecular)
-						{
-							float cosine = eyePath[i].getContactNormal().dot(-eyePath[i - 1].direction);
-							float dist = (eyePath[i].origin - eyePath[i - 1].origin).length();
-							float dirPdfW = dirPdfA * dist * dist / abs(cosine);
-							mis = lastPdfW / (lastPdfW + dirPdfW);
-
-							//fprintf(fp , "==================\n");
-							//fprintf(fp , "thr=(%.6f,%.6f,%.6f), contrib=(%.6f,%.6f,%.6f), pdfA=%.6f, pdfW=%.6f, lastPdfW=%.6f, cosine=%.6f, mis=%.6f\n" , 
-							//	cameraState.throughput[0] , cameraState.throughput[1] , cameraState.throughput[2] , contrib[0] ,
-							//	contrib[1] , contrib[2] , dirPdfA , dirPdfW , lastPdfW , cosine , mis);
-
-						}
+// 						float dirPdfA = eyePath[i].contactObject->getEmissionWeight() / eyePath[i].contactObject->totalArea;
+// 						float mis = 1.f;
+// 						if (i > 1 && !lastSpecular)
+// 						{
+// 							float cosine = eyePath[i].getContactNormal().dot(-eyePath[i - 1].direction);
+// 							float dist = (eyePath[i].origin - eyePath[i - 1].origin).length();
+// 							float dirPdfW = dirPdfA * dist * dist / abs(cosine);
+// 							mis = lastPdfW / (lastPdfW + dirPdfW);
+// 
+// 							//fprintf(fp , "==================\n");
+// 							//fprintf(fp , "thr=(%.6f,%.6f,%.6f), contrib=(%.6f,%.6f,%.6f), pdfA=%.6f, pdfW=%.6f, lastPdfW=%.6f, cosine=%.6f, mis=%.6f\n" , 
+// 							//	cameraState.throughput[0] , cameraState.throughput[1] , cameraState.throughput[2] , contrib[0] ,
+// 							//	contrib[1] , contrib[2] , dirPdfA , dirPdfW , lastPdfW , cosine , mis);
+// 
+// 						}
 
 						colorHitLight = cameraState.throughput * contrib;
 
 						singleImageColors[cameraState.index] += colorHitLight;
 
-						volMask[cameraState.index] = false;
+// 						omp_set_lock(&cmdLock);
+// 						numEyePathsPerPixel += 1;
+// 						numFullPathsPerPixel += 1;
+// 						omp_unset_lock(&cmdLock);
 
 						break;
 					}
@@ -556,23 +562,25 @@ vector<vec3f> IptTracer::renderPixels(const Camera& camera)
 				interPathList[i] = NULL;
 		}
 
+// 		printf("AvgPathSamplesPerPixel = %.6f\n" , numFullPathsPerPixel / (double)pixelNum);
+// 		printf("AvgPathSamplesPerEyePath = %.6f\n" , numFullPathsPerPixel / numEyePathsPerPixel);
 		printf("Iter: %d  IterTime: %.3lfs  TotalTime: %.3lfs\n", s, timer.PopCurrentTime(),
             timer.GetElapsedTime(0));
 
-		if ((useUniformInterSampler && s == 0) || (!useUniformInterSampler && s == 1))
-		{
-			for (int y = camera.height - 1; y >= 0; y--)
-			{
-				for (int x = 0; x < camera.width; x++)
-				{
-					if (volMask[y * camera.width + x])
-						fprintf(fm , "1 ");
-					else
-						fprintf(fm , "0 ");
-				}
-				fprintf(fm , "\n");
-			}
-		}
+// 		if ((useUniformInterSampler && s == 0) || (!useUniformInterSampler && s == 1))
+// 		{
+// 			for (int y = camera.height - 1; y >= 0; y--)
+// 			{
+// 				for (int x = 0; x < camera.width; x++)
+// 				{
+// 					if (volMask[y * camera.width + x])
+// 						fprintf(fm , "1 ");
+// 					else
+// 						fprintf(fm , "0 ");
+// 				}
+// 				fprintf(fm , "\n");
+// 			}
+// 		}
 
 		//if (clock() / 1000 >= lastTime)
 		unsigned nowTime = (unsigned)timer.GetElapsedTime(0);
@@ -1440,6 +1448,11 @@ vec3f IptTracer::colorByMergingPaths(IptPathState& cameraState, PointKDTree<IptP
 	query.color = vec3f(0, 0, 0);
 
 	partialSubPaths.searchInRadius(0 , query.cameraState->pos , gatherRadius , query);
+
+// 	omp_set_lock(&cmdLock);
+// 	numEyePathsPerPixel += 1;
+// 	numFullPathsPerPixel += query.mergeNum;
+// 	omp_unset_lock(&cmdLock);
 
 	return query.color;
 }

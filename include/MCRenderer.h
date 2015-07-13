@@ -9,6 +9,7 @@
 #include "Renderer.h"
 #include "macros.h"
 #include "TimeManager.h"
+#include <omp.h>
 #include <cmath>
 
 typedef vector<Ray> Path;
@@ -59,6 +60,10 @@ protected:
 	TimeManager timer;
     double runtime;
 	unsigned timeStep , lastTime;
+
+	double numEyePathsPerPixel;
+	double numFullPathsPerPixel;
+	omp_lock_t cmdLock;
     
 	vector<Ray> showPath;
 
